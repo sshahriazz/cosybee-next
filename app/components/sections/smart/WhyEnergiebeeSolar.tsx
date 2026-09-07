@@ -24,7 +24,7 @@ export default function WhyEnergieBeeSolar() {
         <DecorHex side="left" className="-top-10" />
         {/* text — left */}
         <div className="min-[1200px]:max-w-163.5 flex flex-col z-9">
-          <SectionTitle>Automated Optimisation</SectionTitle>
+          <SectionTitle>Automated optimisation</SectionTitle>
           <SectionLead className="max-w-163.5">
             Part of the EnergieBee app - everything you need to monitor and
             optimise your solar energy system.
@@ -32,17 +32,17 @@ export default function WhyEnergieBeeSolar() {
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
               glyph="sun"
-              title="Maximise Production"
+              title="Maximise production"
               description="Track real-time solar generation and get insights to optimise energy production."
             />
             <FeatureCard
               glyph="dollar"
-              title="Track Savings"
+              title="Track savings"
               description="See exactly how much money you're saving with detailed analytics and historical comparisons."
             />
             <FeatureCard
               glyph="chart"
-              title="Smart Analytics"
+              title="Smart analytics"
               description="Get detailed insights on production patterns, grid independence, and environmental impact."
             />
           </div>

@@ -8,9 +8,9 @@ export default function Hero() {
   return (
     <PageHero bgImage={heroBgImg} bgImageMobile={heroBgImgMobile}>
       <Heading as="h1" variant="display">
-        Solar Forecasting <span className="text-[#EFDF18]">95%</span>
+        Solar forecasting <span className="text-[#EFDF18]">95%</span>
         <br />
-        <span className="text-[#EFDF18]">Accurate</span> Next Day
+        <span className="text-[#EFDF18]">accurate</span> next day
       </Heading>
       <Text variant="heroLead" className="mt-5 max-w-129.5">
         Advanced AI-powered solar production predictions. Plan your energy usage
@@ -18,7 +18,7 @@ export default function Hero() {
         accuracy.
       </Text>
       <CtaButton href="/download-app" size="md" className="mt-10">
-        Get Started
+        Get started
       </CtaButton>
     </PageHero>
   );

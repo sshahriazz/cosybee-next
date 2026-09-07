@@ -13,19 +13,19 @@ const CARDS: ReadonlyArray<{
   image: StaticImageData;
 }> = [
   {
-    title: "Heating Solutions",
+    title: "Heating solutions",
     description:
       "Smart heating control for comfort, efficiency, and lower energy costs.",
     image: heatingImg,
   },
   {
-    title: "Solar Forecasting",
+    title: "Solar forecasting",
     description:
       "Predict solar generation to maximise savings and energy independence.",
     image: solarImg,
   },
   {
-    title: "Energy Management",
+    title: "Energy management",
     description:
       "Monitor, optimise, and reduce your home's overall energy consumption.",
     image: energyImg,
@@ -42,9 +42,9 @@ export default function AppFeatureCards() {
     <Section spacing="none" className="pb-25">
       <Container>
         <SectionHeader
-          className="max-w-xl"
           title="One app takes care of it all"
           description="With EnergieBee, one app looks after your heating, solar and energy, making life easier and more comfortable for you and your loved ones."
+          className="flex flex-col items-center max-w-xl"
         />
 
         <div className="mt-10 grid grid-cols-1 gap-6 min-[900px]:grid-cols-3">

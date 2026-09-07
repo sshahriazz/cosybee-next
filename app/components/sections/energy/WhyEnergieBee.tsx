@@ -23,7 +23,7 @@ export default function WhyEnergieBee() {
         {/* text — left */}
         <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-155">
           <SectionTitle align="left">
-            Why Choose EnergieBee Energy?
+            Why choose EnergieBee energy?
           </SectionTitle>
           <SectionLead>
             Part of the EnergieBee app — one dashboard for every kilowatt-hour,
@@ -32,17 +32,17 @@ export default function WhyEnergieBee() {
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
               glyph="house"
-              title="See Everything"
+              title="See everything"
               description="Grid, solar, battery, and individual devices — all on one timeline, with the same units and the same clarity."
             />
             <FeatureCard
               glyph="dollar"
-              title="Track Savings"
+              title="Track savings"
               description="Every automation logged with its hard-dollar impact. Know what's working and what's not."
             />
             <FeatureCard
               glyph="chart"
-              title="Smart Analytics"
+              title="Smart analytics"
               description="Trend detection, anomaly alerts, and bill projections — the analytics you'd build if you had the time."
             />
           </div>

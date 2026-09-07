@@ -22,24 +22,24 @@ export default function EnergyAnalytics() {
         <DecorHex side="left" className="-top-13.5" />
         {/* text — left */}
         <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-111.5">
-          <SectionTitle align="left">Energy &amp; Savings</SectionTitle>
+          <SectionTitle align="left">Energy &amp; savings</SectionTitle>
           <SectionLead>
             Understand the impact of your energy choices.
           </SectionLead>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="savings"
-              title="Track Savings"
+              title="Track savings"
               description="See how solar generation reduces your energy costs."
             />
             <FeatureItem
               glyph="energy"
-              title="Energy Independence"
+              title="Energy independence"
               description="Understand how much energy comes from solar versus the grid."
             />
             <FeatureItem
               glyph="environment"
-              title="Environmental Impact"
+              title="Environmental impact"
               description="Track your carbon savings and environmental contribution."
             />
           </div>

@@ -19,26 +19,26 @@ export type WhyEnergieBeeSolarProps = {
 const DEFAULT_CARDS: FeatureCardContent[] = [
   {
     glyph: "sun",
-    title: "Maximise Production",
+    title: "Maximise production",
     description:
       "Track real-time solar generation and get insights to optimise energy production.",
   },
   {
     glyph: "pound",
-    title: "Track Savings",
+    title: "Track savings",
     description:
       "See exactly how much money you're saving with detailed analytics and historical comparisons.",
   },
   {
     glyph: "chart",
-    title: "Smart Analytics",
+    title: "Smart analytics",
     description:
       "Get detailed insights on production patterns, grid independence, and environmental impact.",
   },
 ];
 
 export default function WhyEnergieBeeSolar({
-  title = "Why Choose EnergieBee Solar?",
+  title = "Why choose EnergieBee solar?",
   lead = "Part of the EnergieBee app, everything you need to monitor and optimise your solar energy system.",
   cards = DEFAULT_CARDS,
 }: WhyEnergieBeeSolarProps = {}) {

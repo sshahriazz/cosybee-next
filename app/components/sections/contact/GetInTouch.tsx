@@ -37,13 +37,13 @@ type ContactInfo = {
 const CONTACT_INFO: ContactInfo[] = [
   {
     icon: <Smartphone className="size-5" />,
-    title: "Phone Number",
+    title: "Phone number",
     detail: "+44 1282 940095",
     href: "tel:+441282940095",
   },
   {
     icon: <Envelope className="size-5" />,
-    title: "Email Address",
+    title: "Email address",
     detail: "support@energiebee.com",
     href: "mailto:support@energiebee.com",
     copy: "support@energiebee.com",
@@ -203,7 +203,7 @@ export default function GetInTouch() {
               </legend>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <TextField
-                  aria-label="First Name"
+                  aria-label="First name"
                   value={firstName}
                   onChange={setFirstName}
                   isRequired
@@ -211,7 +211,7 @@ export default function GetInTouch() {
                   <Input placeholder="First Name" className={FIELD_CLASS} />
                 </TextField>
                 <TextField
-                  aria-label="Last Name"
+                  aria-label="Last name"
                   value={lastName}
                   onChange={setLastName}
                   isRequired

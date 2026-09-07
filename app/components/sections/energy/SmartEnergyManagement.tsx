@@ -20,23 +20,23 @@ export default function SmartEnergyManagement() {
         />
         {/* text — left */}
         <div className="z-9 flex flex-col min-[1200px]:max-w-163.5">
-          <SectionTitle>Smart Tariff Control</SectionTitle>
+          <SectionTitle>Smart tariff control</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="pound"
-              title="Dynamic Tariff Switching"
+              title="Dynamic tariff switching"
               description="Plug into time-of-use tariffs and let EnergieBee shift loads to the cheapest windows automatically."
               descWidth="w-full"
             />
             <FeatureItem
               glyph="savings"
-              title="Battery Arbitrage"
+              title="Battery arbitrage"
               description="Charge from the grid at off-peak rates, discharge at peak. Earn the difference back to your wallet, hands-free."
               descWidth="w-full"
             />
             <FeatureItem
               glyph="energy"
-              title="Peak Load Shaving"
+              title="Peak load shaving"
               description="Smart limits trim your worst spikes so you never trigger demand surcharges or breaker trips."
               descWidth="w-full"
             />

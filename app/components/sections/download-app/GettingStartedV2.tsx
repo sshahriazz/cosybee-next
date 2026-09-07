@@ -25,22 +25,22 @@ const STEPS: ReadonlyArray<{
   image: StaticImageData;
 }> = [
   {
-    title: "Download the App",
+    title: "Download the app",
     description: "From the App Store or Google Play.",
     image: downloadImg,
   },
   {
-    title: "Create Your Free Account",
+    title: "Create your free account",
     description: "Free sign-up, under a minute.",
     image: accountImg,
   },
   {
-    title: "Connect Your Home",
+    title: "Connect your home",
     description: "With your EPC data.",
     image: connectImg,
   },
   {
-    title: "Manage Everything in One Place",
+    title: "Manage everything in one place",
     description: "All your energy data, one dashboard.",
     image: homeImg,
   },
@@ -125,6 +125,7 @@ export default function GettingStartedV2() {
             <SectionHeader
               title="Up and running in four steps"
               description="From install to insight in one evening — the app guides you through each step."
+              className="flex flex-col items-center"
             />
 
             <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 items-center gap-10 lg:mt-10 lg:grid-cols-2 lg:gap-16">

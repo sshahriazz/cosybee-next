@@ -70,7 +70,7 @@ export default function PhraseOfTheWeek({
   return (
     <figure className="relative max-w-3xl">
       {/* <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-white/45">
-        Phrase of the Week
+        Phrase of the week
       </h3> */}
 
       {/* Curly quotes in the markup, not CSS `quotes` — they need to survive

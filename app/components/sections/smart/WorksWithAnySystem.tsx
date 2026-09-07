@@ -11,10 +11,11 @@ export default function WorksWithAnySystem() {
     <Section spacing="none">
       <div className="mx-auto max-w-360 pb-11 pt-4 px-4 lg:px-30">
         <CtaCard
-          title="Works With Any Solar System"
+          title="Works with any solar system"
           description="Compatible with all major solar panel brands and inverters. Whether you have a small residential system or a larger commercial installation."
-          buttonText="Learn More"
+          buttonText="Learn more"
           href="/solar"
+          descClassName={"max-w-170"}
         />
       </div>
     </Section>

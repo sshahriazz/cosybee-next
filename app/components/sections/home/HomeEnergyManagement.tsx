@@ -25,7 +25,7 @@ export default function HomeEnergyManagement() {
         {/* text — left */}
         <div className="flex flex-col  z-9">
           <div className="max-w-163.5">
-            <SectionTitle>Energy Management</SectionTitle>
+            <SectionTitle>Energy management</SectionTitle>
             {/* <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
               A clear view of how energy is used, timed, and distributed across
               your home.
@@ -33,19 +33,19 @@ export default function HomeEnergyManagement() {
             <div className="mt-6 md:mt-8 space-y-4">
               <FeatureCard
                 glyph="energy"
-                title="Energy Use"
+                title="Energy use"
                 description={"See where and when energy is used."}
                 descClassName="whitespace-pre-line"
               />
               <FeatureCard
                 glyph="pound"
-                title="Cost Awareness"
+                title="Cost awareness"
                 description={"Understand how energy patterns affect costs."}
                 descClassName="whitespace-pre-line"
               />
               <FeatureCard
                 glyph="home"
-                title="System Behaviour"
+                title="System behaviour"
                 description={
                   "See how weather, solar and home activity interact."
                 }

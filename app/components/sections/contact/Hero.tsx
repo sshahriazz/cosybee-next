@@ -29,7 +29,7 @@ export default function Hero() {
         <div className="relative z-10">
           <Breadcrumbs items={CRUMBS} tone="dark" className="mb-5" />
           <Heading as="h1" variant="display" className="">
-            We&rsquo;re Here to <span className="text-[#EFDF18]">Help</span>
+            We&rsquo;re here to <span className="text-[#EFDF18]">help</span>
           </Heading>
           <Text variant="heroLead" className="mt-5 max-w-129.5">
             We&rsquo;re here to answer your questions and help you make the most

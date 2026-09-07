@@ -11,19 +11,19 @@ import DecorHex from "@/app/components/ui/DecorHex";
 const POINTS = [
   {
     icon: hexaChart,
-    title: "See Where Your Money Goes",
+    title: "See where your money goes",
     description:
       "Track heating, solar, and energy use in real-time. Know exactly what's costing you money.",
   },
   {
     icon: hexaSun,
-    title: "Control From Anywhere",
+    title: "Control from anywhere",
     description:
       "Adjust heating, monitor solar production, and manage energy — all from your phone.",
   },
   {
     icon: hexaDollar,
-    title: "Reduce Your Bills",
+    title: "Reduce your bills",
     description:
       "Get smart insights that show you how to cut energy costs. Start saving from day one.",
   },

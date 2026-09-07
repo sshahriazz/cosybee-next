@@ -25,7 +25,7 @@ export default function SmartEnergyManagement() {
 
         {/* text — left */}
         <div className="z-9 flex flex-col  min-[1200px]:max-w-163.5">
-          <SectionTitle>Smart Home Integration</SectionTitle>
+          <SectionTitle>Smart home integration</SectionTitle>
           <SectionLead>
             Bring your solar system, battery and connected devices together in
             one intelligent platform.
@@ -33,18 +33,18 @@ export default function SmartEnergyManagement() {
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="device"
-              title="Connected Devices"
+              title="Connected devices"
               description="See how your smart home systems work together."
               descWidth="md:w-[85%]"
             />
             <FeatureItem
               glyph="energy"
-              title="Smart Energy Management"
+              title="Smart energy management"
               description="AI-powered recommendations help you use, store and save energy more effectively."
             />
             <FeatureItem
               glyph="insights"
-              title="Performance Tracking"
+              title="Performance tracking"
               description="Monitor long-term system performance and solar investment value."
             />
           </div>
