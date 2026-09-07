@@ -21,7 +21,7 @@ export default function EnergyForecasting() {
           className="pointer-events-none absolute -right-24 -bottom-10 w-[18rem] sm:-right-56 sm:w-88 lg:w-76.75 z-0"
         />
         <SectionHeader
-          className="relative z-10"
+          className="relative z-10 flex flex-col items-center"
           title="Intelligent Energy Forecasting"
           description="EnergieBee uses advanced weather data and AI to predict your solar energy production, helping you plan energy usage and maximise savings"
         />
