@@ -61,7 +61,7 @@ export default function WhyEnergieBee({
         className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-[1.25fr_1fr] min-[1200px]:gap-6"
       >
         {/* text — left */}
-        <div className="z-9 flex flex-col justify-center max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-145">
+        <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-145">
           <SectionTitle align="left">{title}</SectionTitle>
           <SectionLead>{lead}</SectionLead>
           <div className="mt-6 md:mt-8 space-y-4">

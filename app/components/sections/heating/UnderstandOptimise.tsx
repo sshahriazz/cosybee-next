@@ -19,7 +19,7 @@ export default function UnderstandOptimise() {
           className="pointer-events-none absolute -left-30 -top-13.5 w-[18rem] sm:-left-27 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
-        <div className="z-9 flex flex-col justify-center max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-160">
+        <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-160">
           <SectionTitle align="left">
             Understand and Optimise Your Home Energy Today
           </SectionTitle>

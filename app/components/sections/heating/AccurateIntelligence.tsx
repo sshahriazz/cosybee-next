@@ -18,7 +18,7 @@ export default function AccurateIntelligence() {
           className="z-9"
         />
         {/* text */}
-        <div className="relative min-[1200px]:static z-9 flex flex-col min-[550px]:max-[1200px]:items-center min-[1200px]:max-w-163.5">
+        <div className="relative min-[1200px]:static z-9 flex flex-col min-[1200px]:max-w-163.5">
           {/* cream decorative hex bleeding from the top-right */}
           <Hexagon
             color="#F7F2E1"

@@ -19,7 +19,7 @@ export default function SmarterUnderstanding() {
           className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
-        <div className="z-9 flex flex-col justify-center max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-145">
+        <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-145">
           <SectionTitle align="left">
             A Smarter Understanding of Your Home
           </SectionTitle>
