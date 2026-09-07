@@ -4,10 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@heroui/react";
 import { AppLink as Link } from "@/app/components/ui/AppLink";
+import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 import type { Article } from "@/app/lib/article-types";
 import { ArticleCard } from "@/app/components/sections/blog/ArticleCard";
-import Hexagon from "../../ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 
 /** Per-article blog hub path (articles span both blogs on the home page). */
 function basePathFor(a: Article): string {
@@ -212,18 +213,15 @@ export function HomeFeaturedArticlesView({
 
   return (
     <Section spacing="none" className="bg-linear-to-b from-white to-base">
-      <div className="mx-auto max-w-360 relative px-6 pt-12 pb-2 sm:px-10 lg:px-30 ">
+      <Container className="pt-12 pb-2">
         <Header viewAllHref={viewAllHref} />
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -left-30 top-6 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75 z-0"
-        />
+        <DecorHex side="right" className="top-6" />
         {articles.length > 3 ? (
           <FeaturedCarousel articles={articles} />
         ) : (
           <FeaturedGrid articles={articles} />
         )}
-      </div>
+      </Container>
     </Section>
   );
 }

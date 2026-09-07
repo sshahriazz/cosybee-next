@@ -1,4 +1,4 @@
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import {
   FeatureItem,
   SectionLead,
@@ -42,10 +42,7 @@ export default function ConnectedEcosystem() {
       </Container> */}
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-2 min-[1200px]:gap-16">
         {/* cream decorative hex bleeding from the top-left */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
-        />
+        <DecorHex side="left" className="-top-10" />
         {/* text — left */}
         <div className="min-[1200px]:max-w-163.5 flex flex-col z-9">
           <SectionTitle>

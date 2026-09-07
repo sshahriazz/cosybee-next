@@ -8,7 +8,7 @@ import {
   SectionTitle,
 } from "@/app/components/ui/SectionContent";
 import featureImage from "@/public/homepage-images/everything-connected-in-one-place.png";
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 
 /**
  * "Everything in perfect harmony" — text + 3 feature items on the left,
@@ -22,10 +22,7 @@ export default function PerfectHarmony() {
     >
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-[1.25fr_1fr] min-[1200px]:gap-6">
         {/* cream decorative hex bleeding from the top-left */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -top-10 w-[18rem] sm:-left-36 -left-26 sm:w-88 lg:w-76.75"
-        />
+        <DecorHex side="left" className="-top-10" />
         {/* text — left */}
         <div className="min-[1200px]:max-w-170.5 flex flex-col min-[550px]:max-[1200px]:items-start z-9">
           <SectionTitle className="whitespace-pre-line">

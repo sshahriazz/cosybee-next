@@ -3,7 +3,7 @@ import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 import { FeatureCard, SectionTitle } from "@/app/components/ui/SectionContent";
 import featureImage from "@/public/homepage-images/solar-forecasting.png";
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 
 /**
  * Home "Solar Forecasting" — title + 3 feature cards on the left, composed
@@ -16,10 +16,7 @@ export default function HomeSolarForecasting() {
     <Section surface="surface" spacing="lg" className="text-foreground">
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-[1.25fr_1fr] min-[1200px]:gap-6">
         {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
-        />
+        <DecorHex side="left" className="-top-10" />
         {/* text — left */}
         <div className="z-9 flex flex-col max-[1200px]:max-w-160 min-[1200px]:max-w-163.5">
           <SectionTitle align="left">Solar Forecasting</SectionTitle>

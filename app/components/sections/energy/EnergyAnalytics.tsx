@@ -3,7 +3,7 @@ import featureImage from "@/public/energy/energy-and-savings-analytics.png";
 import { AppImage as Image } from "@/app/components/ui/AppImage";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
-import Hexagon from "../../ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 
 export default function EnergyAnalytics() {
   // Two-column band: title + features on the left, artwork on the right.
@@ -13,10 +13,7 @@ export default function EnergyAnalytics() {
         size="wide"
         className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-[1.25fr_1fr] min-[1200px]:gap-6"
       >
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75 z-0"
-        />
+        <DecorHex side="left" className="-top-10" />
         {/* text — left */}
         <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-136.5">
           <SectionTitle align="left">

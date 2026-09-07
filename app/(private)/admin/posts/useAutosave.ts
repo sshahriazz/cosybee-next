@@ -20,7 +20,10 @@ export type AutosaveState =
   | { status: "idle" }
   | { status: "dirty" }
   | { status: "saving" }
-  | { status: "saved"; at: number; staged: boolean }
+  // No `staged` here on purpose: whether unpublished work is outstanding is a
+  // fact about the POST, not about the last request, and a second copy of it
+  // in here is what let the message and the Discard button drift apart.
+  | { status: "saved"; at: number }
   | { status: "error"; message: string };
 
 /**
@@ -114,7 +117,7 @@ export function useAutosave<T>({
         // during the request differs from this and schedules another pass.
         savedRef.current = snapshot;
         lastSentRef.current = current;
-        setState({ status: "saved", at: Date.now(), staged: result.staged });
+        setState({ status: "saved", at: Date.now() });
       } else {
         setState({ status: "error", message: result.error });
       }

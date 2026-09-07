@@ -6,7 +6,7 @@ import hexaChart from "@/public/hexa-wand-icon.svg";
 // import hexaSun from "@/public/hexa-connector-icon.svg";
 import hexaSun from "@/public/connection.svg";
 import hexaDollar from "@/public/hexa-dollar.svg";
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 
 const POINTS = [
   {
@@ -41,10 +41,7 @@ export default function WhyThousands() {
     >
       <Container className="py-20 lg:py-25">
         {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#fff"
-          className="pointer-events-none absolute -right-24 top-9 w-[18rem] sm:-right-36 sm:w-88 lg:w-67.5"
-        />
+        <DecorHex side="right" color="#fff" className="top-9 lg:w-67.5" />
         <div className="relative z-9">
           <SectionHeader
             title="Why thousands choose EnergieBee"

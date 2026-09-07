@@ -1,4 +1,4 @@
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import {
   FeatureItem,
   SectionLead,
@@ -12,6 +12,7 @@ export default function EnergyMonitoring() {
   return (
     <Section surface="surface" spacing="md" className="text-foreground">
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-2 min-[1200px]:gap-38">
+        <DecorHex side="right" className="-top-13.5" />
         {/* artwork */}
         <Image
           src={featureImage}
@@ -21,12 +22,7 @@ export default function EnergyMonitoring() {
           className="z-9"
         />
         {/* text */}
-        <div className="relative min-[1200px]:static z-9 flex flex-col  min-[1200px]:max-w-163.5">
-          {/* cream decorative hex bleeding from the top-right */}
-          <Hexagon
-            color="#F7F2E1"
-            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-13.5 w-[18rem] sm:-right-27 sm:w-88 lg:w-76.75"
-          />
+        <div className="z-9 flex flex-col  min-[1200px]:max-w-163.5">
           <SectionTitle>AI-Powered Insights</SectionTitle>
           <SectionLead>
             See what&apos;s happening across your home energy system.
