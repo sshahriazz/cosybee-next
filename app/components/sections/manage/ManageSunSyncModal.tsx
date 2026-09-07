@@ -14,7 +14,12 @@ import {
   Separator,
   Spinner,
 } from "@heroui/react";
-import { ArrowsRotateLeft, LinkSlash, Sun } from "@gravity-ui/icons";
+import {
+  ArrowsRotateLeft,
+  ChevronRight,
+  LinkSlash,
+  Sun,
+} from "@gravity-ui/icons";
 import {
   disconnectSunSync,
   listSunSyncPlants,
@@ -161,7 +166,7 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
   return (
     <Modal>
       <Modal.Trigger>{children}</Modal.Trigger>
-      <Modal.Backdrop>
+      <Modal.Backdrop variant="blur">
         {/* The switch view holds an accordion of every plant on the
             account, so it earns the wider dialog; the other two views are
             a short list and a yes/no question. */}
@@ -171,7 +176,6 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
           scroll="inside"
         >
           <Modal.Dialog>
-            <Modal.CloseTrigger />
             <Modal.Header className="flex-row items-start gap-3 pe-10">
               <Modal.Icon className="bg-warning-soft text-warning-soft-foreground">
                 <Sun aria-hidden className="size-5" />
@@ -222,6 +226,10 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
                         Pick a different plant or inverter on this account.
                       </Description>
                     </div>
+                    <ChevronRight
+                      aria-hidden
+                      className="ms-auto size-4 shrink-0 text-muted"
+                    />
                   </ListBox.Item>
                   <Separator />
                   <ListBox.Item
@@ -239,6 +247,10 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
                         Stop live sync. Historical readings kept.
                       </Description>
                     </div>
+                    <ChevronRight
+                      aria-hidden
+                      className="ms-auto size-4 shrink-0 text-danger"
+                    />
                   </ListBox.Item>
                 </ListBox>
               )}
@@ -389,6 +401,13 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
                 </Button>
               )}
             </Modal.Footer>
+
+            {/* Last child on purpose. React Aria focuses the first tabbable
+                element when the dialog opens — with the close button first
+                in the DOM, opening the modal parked a focus ring on the X.
+                Now focus lands on the action list, where arrow keys and
+                typeahead work straight away. */}
+            <Modal.CloseTrigger />
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>
