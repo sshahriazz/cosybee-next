@@ -188,11 +188,20 @@
   line-height: 1.1;
   letter-spacing: -0.01em;
 }
+/* h3 keeps the published size but takes the EDITOR's spacing, so a
+   sub-heading sits the same distance from its text in both views.
+   BlockNote gives a heading block `padding-top: 18px` on top of the 3px every
+   block carries, and 3px below — 21px above, 6px below. The bottom value is
+   negative because the paragraph that follows brings its own 2.25rem top
+   margin, and adjacent margins collapse to the sum of the largest positive and
+   the smallest negative: 2.25rem - 1.875rem leaves the 6px. */
 .article-body h3 {
   font-size: 1.25rem; /* 20px */
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.01em;
+  margin-top: 1.3125rem; /* 21px */
+  /* margin-bottom: 1.875rem; nets 6px against the next paragraph */
 }
 .article-body h4 {
   font-size: 1.125rem; /* 18px */
@@ -215,6 +224,7 @@
 .article-body ul,
 .article-body ol {
   padding-left: 1.5rem;
+  margin-top: 2rem;
 }
 .article-body ul {
   list-style: disc;
@@ -256,7 +266,7 @@
 }
 .article-body img {
   border-radius: 0.5rem;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   /* The lossy export sets an explicit `width` (the author's resized preview
      width); cap it to the column and keep the aspect ratio on small screens. */
   max-width: 100%;
@@ -269,7 +279,7 @@
    default 300x150 box. */
 .article-body video {
   border-radius: 0.5rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
   /* Mirrors the img rule: the export sets the author's resized preview width. */
   max-width: 100%;
   height: auto;
@@ -1280,44 +1290,49 @@
 }
 /* Heading sizes in the editor come from BlockNote's `--level` em multiplier
    (3em / 2em / 1.3em / 1em / .9em / .8em of the editor base). Re-point that
-   ladder at the published one — 36 / 32 / 28 / 24 / 20 / 16px against the 1rem
+   ladder at the published one — 36 / 24 / 20 / 18 / 16 / 14px against the 1rem
    base above. `--prev-level` is the same ladder for BlockNote's transient
-   block-transition state, so a heading doesn't flash the old size mid-change. */
+   block-transition state, so a heading doesn't flash the old size mid-change.
+
+   Keep these in step with `.article-body h1`–`h6` at the top of this file.
+   They had drifted everywhere below h1 — the editor was still on an older
+   36/32/28/24/20/16 scale, so an h3 was written at 28px and published at 20px,
+   wrapping differently in the two views. */
 .post-editor [data-content-type="heading"] {
-  --level: 2.25em;
+  --level: 2.25em; /* 36px */
 }
 .post-editor [data-content-type="heading"][data-level="2"] {
-  --level: 2em;
+  --level: 1.5em; /* 24px */
 }
 .post-editor [data-content-type="heading"][data-level="3"] {
-  --level: 1.75em;
+  --level: 1.25em; /* 20px */
 }
 .post-editor [data-content-type="heading"][data-level="4"] {
-  --level: 1.5em;
+  --level: 1.125em; /* 18px */
 }
 .post-editor [data-content-type="heading"][data-level="5"] {
-  --level: 1.25em;
+  --level: 1em; /* 16px */
 }
 .post-editor [data-content-type="heading"][data-level="6"] {
-  --level: 1em;
+  --level: 0.875em; /* 14px */
 }
 .post-editor [data-prev-level="1"] {
   --prev-level: 2.25em;
 }
 .post-editor [data-prev-level="2"] {
-  --prev-level: 2em;
-}
-.post-editor [data-prev-level="3"] {
-  --prev-level: 1.75em;
-}
-.post-editor [data-prev-level="4"] {
   --prev-level: 1.5em;
 }
-.post-editor [data-prev-level="5"] {
+.post-editor [data-prev-level="3"] {
   --prev-level: 1.25em;
 }
-.post-editor [data-prev-level="6"] {
+.post-editor [data-prev-level="4"] {
+  --prev-level: 1.125em;
+}
+.post-editor [data-prev-level="5"] {
   --prev-level: 1em;
+}
+.post-editor [data-prev-level="6"] {
+  --prev-level: 0.875em;
 }
 /* Leading and tracking to match the published headings. BlockNote hard-codes
    `font-weight: 700` on a five-class selector, so the semibold levels are
@@ -1352,6 +1367,20 @@
   line-height: 1.25;
   letter-spacing: normal;
 }
+/* Mirrors `.article-body p`. The editor's base stays at 1rem — matching what
+   `.article-body` itself inherits — and body copy is sized on the paragraph
+   block, exactly as the published page sizes `p` rather than its container.
+   Sizing the base instead would drag every `em` with it, the heading ladder
+   above included. */
+.post-editor .bn-editor [data-content-type="paragraph"] {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.5;
+}
+/* Mirrors `.article-body td > p`, which takes the same body size — `th` is the
+   exception and is set to 1rem further down, as it is on the page. */
+.post-editor .bn-editor [data-content-type="table"] td {
+  font-size: 1.25rem; /* 20px */
+}
 /* Mirrors `.article-body li` — list items sit one step below body copy, with
    their own tighter leading (the `.bn-block-outer` rule above would otherwise
    hand them body leading). */
@@ -1359,7 +1388,7 @@
 .post-editor .bn-editor [data-content-type="numberedListItem"],
 .post-editor .bn-editor [data-content-type="checkListItem"],
 .post-editor .bn-editor [data-content-type="toggleListItem"] {
-  font-size: 0.875rem; /* 14px */
+  font-size: 1.125rem; /* 18px */
   line-height: 1.3;
 }
 
