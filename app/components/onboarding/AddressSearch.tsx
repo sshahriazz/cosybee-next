@@ -1,8 +1,15 @@
 "use client";
 
-import type { Key } from "react";
+import type { Key, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ComboBox, Input, ListBox, Spinner } from "@heroui/react";
+import {
+  ComboBox,
+  Description,
+  Input,
+  Label,
+  ListBox,
+  Spinner,
+} from "@heroui/react";
 
 /**
  * Debounced typeahead against the AFD Postcode Evolution proxy. Same
@@ -32,12 +39,22 @@ interface Suggestion {
 interface Props {
   onPick: (key: string, label: string) => void;
   autoFocus?: boolean;
+  /** Visible field label. Falls back to an `aria-label` when omitted, so
+   *  the combobox stays accessible either way. */
+  label?: ReactNode;
+  /** Helper text under the field. */
+  description?: ReactNode;
 }
 
 const DEBOUNCE_MS = 250;
 const MIN_CHARS = 3;
 
-export function AddressSearch({ onPick, autoFocus }: Props) {
+export function AddressSearch({
+  onPick,
+  autoFocus,
+  label,
+  description,
+}: Props) {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -98,7 +115,8 @@ export function AddressSearch({ onPick, autoFocus }: Props) {
 
   return (
     <ComboBox
-      aria-label="Address or postcode"
+      fullWidth
+      aria-label={label ? undefined : "Address or postcode"}
       items={suggestions}
       inputValue={inputValue}
       onInputChange={setInputValue}
@@ -106,6 +124,7 @@ export function AddressSearch({ onPick, autoFocus }: Props) {
       menuTrigger="input"
       allowsEmptyCollection
     >
+      {label && <Label>{label}</Label>}
       <ComboBox.InputGroup>
         <Input
           autoFocus={autoFocus}
@@ -114,6 +133,7 @@ export function AddressSearch({ onPick, autoFocus }: Props) {
           placeholder="Start typing a postcode, e.g. SW1A 1AA"
         />
       </ComboBox.InputGroup>
+      {description && <Description>{description}</Description>}
       <ComboBox.Popover>
         <ListBox
           items={suggestions}

@@ -16,11 +16,18 @@ export default function ConnectOctopusStep() {
         step={4}
         total={4}
         title="Connect your tariff"
-        description="Link your Octopus account so the dashboard can show your live tariff and daily cost. Skip for now if you'd rather do this later."
+        description="Link your Octopus account to see what your energy actually costs."
       />
-      <ConnectStep skipHref="/energyflow-home">
+      <ConnectStep
+        skipHref="/energyflow-home"
+        points={[
+          "Your live unit rate and standing charge",
+          "Daily cost from your real consumption",
+          "About 13 months of history, back-filled once",
+        ]}
+      >
         <ConnectOctopusModal successHref="/energyflow-home">
-          <Button variant="primary" size="lg" fullWidth>
+          <Button variant="primary" size="lg">
             Connect Octopus
           </Button>
         </ConnectOctopusModal>

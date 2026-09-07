@@ -3,14 +3,18 @@
 import type { ReactNode } from "react";
 import { useEffect, useState, useTransition } from "react";
 import {
-  Accordion,
+  Alert,
   Button,
   Chip,
+  Description,
+  Header,
+  Label,
+  ListBox,
   Modal,
-  Radio,
-  RadioGroup,
+  Separator,
+  Spinner,
 } from "@heroui/react";
-import { Sun } from "@gravity-ui/icons";
+import { ArrowsRotateLeft, LinkSlash, Sun } from "@gravity-ui/icons";
 import {
   disconnectSunSync,
   listSunSyncPlants,
@@ -26,12 +30,37 @@ import {
  *   • Disconnect — unlink the SunSync account (historical readings stay).
  *   • Switch inverter — repoint to a different plant/inverter on the SAME
  *     linked account. Destructive: the backend deletes the previous
- *     inverter's readings, so the user must tick a consent box before the
- *     action fires (mirrors `confirmDiscardHistory` on the endpoint).
+ *     inverter's readings, so the warning sits above the list, where it
+ *     is read BEFORE the tap that applies the change.
  *
  * Kept in `sections/manage/` — same rationale as `sections/connect/`: the
  * lifecycle actions cluster by domain, not by dashboard slot, and any card
  * that wants to expose them just imports the modal.
+ *
+ * ### Design notes
+ *
+ *   • The menu is a HeroUI `ListBox` with `selectionMode="none"` +
+ *     `onAction` — the library's own action-menu pattern, with
+ *     `variant="danger"` carrying the destructive tint. It replaced two
+ *     hand-rolled `<button>` cards that re-implemented hover, focus and
+ *     danger styling by hand and picked up none of the keyboard
+ *     behaviour (arrow keys, typeahead) a listbox gives for free.
+ *   • Tints come from HeroUI tokens. The header icon and the selected
+ *     inverter row both reached for `var(--efh-solar)`, which is scoped
+ *     to `.efh-scope` in globals.css — this dialog portals to
+ *     `document.body`, outside that scope, so the header icon rendered
+ *     on a blank square and the selected row got no highlight at all.
+ *   • Status feedback is `Alert`, matching the connect dialogs.
+ *   • The inverter picker is a sectioned `ListBox` — one plant per
+ *     section, one tap to apply. It replaced a `RadioGroup` wrapped
+ *     around an `Accordion`: every plant was collapsed, so reaching any
+ *     inverter took two clicks and a third on a submit button, and a
+ *     screen full of chevrons showed no inverters at all.
+ *   • Applying on tap is the product decision here; the confirm step is
+ *     gone. Plants with no inverters are dropped rather than rendered as
+ *     un-openable rows, and the currently-linked inverter is disabled —
+ *     switching to what you are already on is a no-op that would still
+ *     bin your history.
  */
 
 type View = "menu" | "disconnect" | "switch";
@@ -52,13 +81,24 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
 
   // Switch-inverter picker state
   const [plants, setPlants] = useState<LinkedPlant[] | null>(null);
-  const [selectedInverter, setSelectedInverter] = useState<string | null>(null); // "plantId::serial"
+  // "plantId::serial" of the row currently being applied, so that row can
+  // show a spinner while every other row locks.
+  const [switching, setSwitching] = useState<string | null>(null);
 
-  // Plant ID that holds the currently-linked inverter — used to auto-expand
-  // the matching accordion item so the user sees which node they're moving
-  // away from without clicking through every group.
-  const currentPlantId =
-    plants?.find((p) => p.inverters.some((i) => i.isCurrent))?.id ?? null;
+  // Plants with no inverters can't be switched to — the API still lists
+  // them, but as rows they're dead weight.
+  const plantsWithInverters =
+    plants?.filter((p) => p.inverters.length > 0) ?? null;
+
+  // The row you're already on. Disabled: re-picking it discards your
+  // history for no gain.
+  const currentKey =
+    plants
+      ?.flatMap((p) => p.inverters.map((i) => ({ p, i })))
+      .find(({ i }) => i.isCurrent) ?? null;
+  const currentId = currentKey
+    ? `${currentKey.p.id}::${currentKey.i.serial}`
+    : null;
 
   // Load the plant list when the user enters the switch view. Runs client-
   // side (Server Action call) so the dialog can open instantly on the menu
@@ -69,15 +109,6 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
       const result = await listSunSyncPlants();
       if (result.ok) {
         setPlants(result.plants);
-        // Pre-select the currently active inverter so the picker isn't empty
-        // and the user can see which one they're moving AWAY from.
-        for (const plant of result.plants) {
-          const current = plant.inverters.find((i) => i.isCurrent);
-          if (current) {
-            setSelectedInverter(`${plant.id}::${current.serial}`);
-            break;
-          }
-        }
       } else {
         setError(result.error);
       }
@@ -87,7 +118,7 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
   function reset() {
     setView("menu");
     setError(null);
-    setSelectedInverter(null);
+    setSwitching(null);
     // Keep `plants` cached — reopening the modal doesn't need a refetch.
   }
 
@@ -103,23 +134,25 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
     });
   }
 
-  function handleSwitch() {
+  /**
+   * Applied straight from the tap — there is no confirm step, so the
+   * warning above the list is the last thing read before this fires.
+   */
+  function handleSwitch(id: string) {
     setError(null);
-    if (!selectedInverter) {
-      setError("Pick an inverter first.");
-      return;
-    }
-    const [plantId, inverterSerial] = selectedInverter.split("::");
+    const [plantId, inverterSerial] = id.split("::");
     if (!plantId || !inverterSerial) {
       setError("Invalid selection.");
       return;
     }
+    setSwitching(id);
     startTransition(async () => {
       const result = await switchSunSyncSelection({
         plantId,
         inverterSerial,
         confirmDiscardHistory: true,
       });
+      setSwitching(null);
       if (!result.ok) setError(result.error);
       else reset();
     });
@@ -129,11 +162,19 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
     <Modal>
       <Modal.Trigger>{children}</Modal.Trigger>
       <Modal.Backdrop>
-        <Modal.Container size="lg" placement="center" scroll="inside">
+        {/* The switch view holds an accordion of every plant on the
+            account, so it earns the wider dialog; the other two views are
+            a short list and a yes/no question. */}
+        <Modal.Container
+          size={view === "switch" ? "lg" : "md"}
+          placement="center"
+          scroll="inside"
+        >
           <Modal.Dialog>
-            <Modal.Header className="flex-row items-start gap-3">
-              <Modal.Icon className="bg-[color:var(--efh-solar)]/10 text-[color:var(--efh-solar)]">
-                <Sun className="size-5" />
+            <Modal.CloseTrigger />
+            <Modal.Header className="flex-row items-start gap-3 pe-10">
+              <Modal.Icon className="bg-warning-soft text-warning-soft-foreground">
+                <Sun aria-hidden className="size-5" />
               </Modal.Icon>
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -144,163 +185,195 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
                     </Chip>
                   )}
                 </div>
-                <p className="mt-1 text-sm text-muted">
-                  {view === "menu" &&
-                    "Disconnect this Sunsynk account or switch to a different inverter on the same account."}
+                <p className="mt-1 text-sm leading-5 text-muted">
+                  {view === "menu" && "Choose what to change."}
                   {view === "disconnect" &&
-                    "This unlinks the Sunsynk account from this home. Historical readings stay in your account — reconnecting later restores live sync."}
-                  {view === "switch" &&
-                    "Repoint the dashboard at a different inverter on this Sunsynk account. No password re-entry needed."}
+                    "The dashboard stops receiving live power flow."}
+                  {view === "switch" && "Pick the inverter to read from."}
                 </p>
               </div>
             </Modal.Header>
 
             <Modal.Body>
               {error && (
-                <div
-                  role="alert"
-                  className="mb-4 rounded-md border border-danger/30 bg-danger/10 p-3 text-sm text-danger"
-                >
-                  {error}
-                </div>
+                <Alert status="danger" className="mb-4">
+                  <Alert.Indicator />
+                  <Alert.Content>
+                    <Alert.Description>{error}</Alert.Description>
+                  </Alert.Content>
+                </Alert>
               )}
 
               {view === "menu" && (
-                <div className="flex flex-col gap-3">
-                  <ActionRow
-                    label="Switch inverter"
-                    description="Pick a different plant or inverter on this Sunsynk account."
-                    onSelect={() => setView("switch")}
-                  />
-                  <ActionRow
-                    label="Disconnect Sunsynk"
-                    description="Stop live sync. Historical readings kept."
-                    danger
-                    onSelect={() => setView("disconnect")}
-                  />
-                </div>
+                <ListBox
+                  aria-label="Sunsynk actions"
+                  selectionMode="none"
+                  onAction={(key) => setView(key as View)}
+                  className="rounded-2xl border border-border bg-surface shadow-xs"
+                >
+                  <ListBox.Item id="switch" textValue="Switch inverter">
+                    <ArrowsRotateLeft
+                      aria-hidden
+                      className="size-4 shrink-0 text-muted"
+                    />
+                    <div className="flex flex-col">
+                      <Label>Switch inverter</Label>
+                      <Description>
+                        Pick a different plant or inverter on this account.
+                      </Description>
+                    </div>
+                  </ListBox.Item>
+                  <Separator />
+                  <ListBox.Item
+                    id="disconnect"
+                    textValue="Disconnect Sunsynk"
+                    variant="danger"
+                  >
+                    <LinkSlash
+                      aria-hidden
+                      className="size-4 shrink-0 text-danger"
+                    />
+                    <div className="flex flex-col">
+                      <Label>Disconnect Sunsynk</Label>
+                      <Description>
+                        Stop live sync. Historical readings kept.
+                      </Description>
+                    </div>
+                  </ListBox.Item>
+                </ListBox>
               )}
 
+              {/* No nested danger panel — the dialog, its heading and the
+                  red confirm button already carry the warning. */}
               {view === "disconnect" && (
-                <div className="rounded-lg border border-danger/30 bg-danger/5 p-4 text-sm text-danger">
-                  <p className="font-semibold">Disconnect this Sunsynk account?</p>
-                  <p className="mt-1 text-danger/80">
-                    The dashboard will stop receiving live power flow. Historical
-                    readings stay in your account and are restored if you reconnect
-                    later.
-                  </p>
-                </div>
+                <p className="text-sm leading-6 text-muted">
+                  Your historical readings stay in your account, and
+                  reconnecting later restores live sync.
+                </p>
               )}
 
               {view === "switch" && (
                 <div className="flex flex-col gap-4">
-                  {plants === null && (
-                    <p className="text-sm text-muted">Loading your Sunsynk plants…</p>
-                  )}
-                  {plants !== null && plants.length === 0 && (
-                    <p className="text-sm text-muted">
-                      No plants found on this Sunsynk account.
-                    </p>
-                  )}
-                  {plants !== null && plants.length > 0 && (
-                    // One RadioGroup wraps the whole Accordion so radios in
-                    // any expanded panel share the same selection state (a
-                    // pick in one plant deselects a pick in another). The
-                    // plant containing the currently-linked inverter is
-                    // expanded by default so the user immediately sees
-                    // which node they're moving away from.
-                    //
-                    // Explicit max-height + overflow-y-auto around the
-                    // Accordion because HeroUI Modal's `scroll="inside"`
-                    // only sets `overflow-y-auto` on Modal.Body — it doesn't
-                    // give Body a bounded height, so the modal grew past
-                    // the viewport on accounts with many plants (footer
-                    // pushed off-screen, no scrollbar). A hard max-height
-                    // here scrolls the Accordion inline while the footer
-                    // stays visible below.
-                    <RadioGroup
-                      aria-label="Inverter"
-                      value={selectedInverter ?? ""}
-                      onChange={setSelectedInverter}
-                      className="max-h-[min(60vh,32rem)] overflow-y-auto overscroll-contain rounded-md border border-separator"
+                  {/* Above the list, because a tap applies immediately —
+                      but one muted line, not a boxed Alert. Three lines of
+                      amber panel pushed the actual list below the fold. */}
+                  <p className="text-xs leading-5 text-muted">
+                    Applies right away, and clears stored history for the
+                    inverter you&apos;re on now.
+                  </p>
+
+                  {plantsWithInverters === null && (
+                    <div
+                      role="status"
+                      className="flex items-center gap-3 rounded-2xl bg-surface-secondary px-4 py-6"
                     >
-                      <Accordion
-                        variant="default"
-                        defaultExpandedKeys={
-                          currentPlantId ? [currentPlantId] : []
-                        }
-                      >
-                        {plants.map((plant) => {
-                          const currentCount = plant.inverters.filter(
-                            (i) => i.isCurrent,
-                          ).length;
-                          return (
-                            <Accordion.Item key={plant.id} id={plant.id}>
-                              <Accordion.Heading>
-                                <Accordion.Trigger className="flex w-full items-center justify-between gap-3 py-3 text-left">
-                                  <span className="flex flex-wrap items-center gap-2">
-                                    <span className="text-sm font-semibold text-foreground">
-                                      {plant.label}
-                                    </span>
-                                    <span className="text-xs text-muted">
-                                      {plant.inverters.length}{" "}
-                                      {plant.inverters.length === 1
-                                        ? "inverter"
-                                        : "inverters"}
-                                    </span>
-                                    {currentCount > 0 && (
-                                      <Chip
-                                        color="success"
-                                        variant="soft"
-                                        size="sm"
-                                      >
-                                        Current
-                                      </Chip>
-                                    )}
-                                  </span>
-                                  <Accordion.Indicator />
-                                </Accordion.Trigger>
-                              </Accordion.Heading>
-                              <Accordion.Panel>
-                                <Accordion.Body className="flex flex-col gap-1 pb-3">
-                                  {plant.inverters.map((inv) => (
-                                    <InverterPickerRow
-                                      key={`${plant.id}::${inv.serial}`}
-                                      value={`${plant.id}::${inv.serial}`}
-                                      label={inv.label}
-                                      isCurrent={inv.isCurrent}
-                                    />
-                                  ))}
-                                </Accordion.Body>
-                              </Accordion.Panel>
-                            </Accordion.Item>
-                          );
-                        })}
-                      </Accordion>
-                    </RadioGroup>
+                      <Spinner size="sm" />
+                      <p className="text-sm text-muted">
+                        Loading your Sunsynk plants…
+                      </p>
+                    </div>
                   )}
-                  {/* Warning as pure informational text — clicking the
-                      "Switch inverter" button IS the confirmation. The
-                      earlier "check this box, then click the button"
-                      pattern gated one decision behind two steps and
-                      surfaced a redundant "please confirm" error when
-                      users clicked the button without checking. The
-                      backend still requires `confirmDiscardHistory: true`;
-                      that's now sent unconditionally on submit. */}
-                  <div className="flex items-start gap-2 rounded-md bg-warning/10 px-3 py-2.5 text-xs text-warning-foreground">
-                    <span aria-hidden="true">⚠️</span>
-                    <span>
-                      Switching inverters discards this home&apos;s stored
-                      readings, daily totals and intraday ledger for the
-                      currently linked inverter.
-                    </span>
-                  </div>
+
+                  {plantsWithInverters !== null &&
+                    plantsWithInverters.length === 0 && (
+                      <p className="rounded-2xl bg-surface-secondary px-4 py-6 text-center text-sm text-muted">
+                        No other inverters on this Sunsynk account.
+                      </p>
+                    )}
+
+                  {plantsWithInverters !== null &&
+                    plantsWithInverters.length > 0 && (
+                      // Bounded height + overflow because HeroUI Modal's
+                      // `scroll="inside"` sets overflow on Modal.Body but
+                      // never gives it a height, so a long account pushed
+                      // the footer off-screen with no scrollbar.
+                      <ListBox
+                        aria-label="Inverter"
+                        selectionMode="none"
+                        disabledKeys={
+                          pending
+                            ? plantsWithInverters.flatMap((p) =>
+                                p.inverters.map((i) => `${p.id}::${i.serial}`),
+                              )
+                            : currentId
+                              ? [currentId]
+                              : []
+                        }
+                        onAction={(key) => handleSwitch(String(key))}
+                        className="max-h-[min(55vh,26rem)] overflow-y-auto overscroll-contain rounded-2xl border border-border bg-surface p-2"
+                      >
+                        {plantsWithInverters.map((plant, plantIdx) => (
+                          <ListBox.Section key={plant.id}>
+                            {/* A rule above every group but the first —
+                                react-aria's collection builder won't walk a
+                                Fragment, so a real <Separator /> between
+                                sections can't be produced from a .map(). */}
+                            <Header
+                              className={`text-[11px] font-semibold tracking-wider uppercase ${
+                                plantIdx > 0
+                                  ? "mt-2 border-t border-separator pt-3.5"
+                                  : ""
+                              }`}
+                            >
+                              {plant.label}
+                            </Header>
+                            {plant.inverters.map((inv) => {
+                              const id = `${plant.id}::${inv.serial}`;
+                              const { serial, status, isOnline } =
+                                parseInverterLabel(inv.label);
+                              return (
+                                <ListBox.Item
+                                  key={id}
+                                  id={id}
+                                  textValue={`${plant.label} ${serial}`}
+                                >
+                                  {/* The dot already says online/offline, so
+                                      the word only appears when it's the
+                                      exceptional one. Every row was two
+                                      lines tall to print "online". */}
+                                  <span
+                                    aria-hidden
+                                    className={`size-2 shrink-0 rounded-full ${
+                                      isOnline ? "bg-success" : "bg-muted/50"
+                                    }`}
+                                  />
+                                  <Label className="truncate font-mono text-[13px]">
+                                    {serial}
+                                  </Label>
+                                  {switching === id ? (
+                                    <Spinner size="sm" className="ms-auto" />
+                                  ) : inv.isCurrent ? (
+                                    <Chip
+                                      color="success"
+                                      variant="soft"
+                                      size="sm"
+                                      className="ms-auto shrink-0"
+                                    >
+                                      Linked
+                                    </Chip>
+                                  ) : !isOnline && status ? (
+                                    <span className="ms-auto shrink-0 text-xs text-muted">
+                                      {status}
+                                    </span>
+                                  ) : null}
+                                </ListBox.Item>
+                              );
+                            })}
+                          </ListBox.Section>
+                        ))}
+                      </ListBox>
+                    )}
                 </div>
               )}
+
             </Modal.Body>
 
             <Modal.Footer>
-              {view === "menu" && <Modal.CloseTrigger />}
+              {view === "menu" && (
+                <Button slot="close" variant="tertiary">
+                  Close
+                </Button>
+              )}
               {view !== "menu" && (
                 <Button variant="tertiary" onPress={reset} isDisabled={pending}>
                   Back
@@ -315,15 +388,6 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
                   {pending ? "Disconnecting…" : "Disconnect"}
                 </Button>
               )}
-              {view === "switch" && (
-                <Button
-                  variant="primary"
-                  onPress={handleSwitch}
-                  isDisabled={pending || plants === null}
-                >
-                  {pending ? "Switching…" : "Switch inverter"}
-                </Button>
-              )}
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
@@ -332,13 +396,6 @@ export function ManageSunSyncModal({ children, propertyLabel }: Props) {
   );
 }
 
-/**
- * One inverter row in the switch picker. Mirrors the `PickerRow` composition
- * in `ConnectSunSyncModal` — Radio.Control renders the actual radio dial and
- * the whole card is the hit target, so a tap anywhere on the row selects it.
- * Without this the bare `<Radio>{children}</Radio>` renders nothing visible
- * to click.
- */
 /**
  * Splits the backend's `<serial> (online|offline)` label into its parts so
  * the row can style the status as a small coloured dot next to the serial
@@ -356,98 +413,4 @@ function parseInverterLabel(label: string): {
   return { serial: match[1]!, status, isOnline: status === "online" };
 }
 
-function InverterPickerRow({
-  value,
-  label,
-  isCurrent,
-}: {
-  value: string;
-  /** Already formatted as `<serial> (online|offline)` — matches onboarding. */
-  label: string;
-  isCurrent: boolean;
-}) {
-  const { serial, status, isOnline } = parseInverterLabel(label);
-  // Borderless row: the row itself is `flex items-center gap-3` (matching
-  // HeroUI's `.radio` default so the dial + content sit tight next to
-  // each other, not with a stretched flex-1 gap). Serial + status pill
-  // group hugs the left; a `Currently linked` chip when present pushes
-  // to the right via `ml-auto`.
-  return (
-    <Radio
-      value={value}
-      className="cursor-pointer rounded-md px-3 py-2 text-sm transition-colors hover:bg-surface-secondary data-[selected=true]:bg-[color:var(--efh-solar)]/10"
-    >
-      <Radio.Control>
-        <Radio.Indicator />
-      </Radio.Control>
-      {/* HeroUI's `.radio__content` defaults to `flex flex-col gap-0`, so
-          a className overriding to horizontal via just `flex items-center`
-          gets tailwind-merged AWAY (no explicit `flex-row` to displace
-          `flex-col`). Wrapping in an inner div sidesteps that entirely
-          and pins the layout — Radio.Content just holds one full-width
-          child, and the inner div owns the row layout. */}
-      <Radio.Content className="w-full min-w-0 flex-1">
-        <div className="flex w-full items-center gap-3">
-          <span className="truncate font-mono text-[13px] text-foreground">
-            {serial}
-          </span>
-          {status && (
-            <span
-              className={`inline-flex shrink-0 items-center gap-1 text-[11px] ${
-                isOnline ? "text-success" : "text-muted"
-              }`}
-            >
-              <span
-                aria-hidden="true"
-                className={`inline-block size-1.5 rounded-full ${
-                  isOnline ? "bg-success" : "bg-muted-foreground"
-                }`}
-              />
-              {status}
-            </span>
-          )}
-          {isCurrent && (
-            <Chip color="success" variant="soft" size="sm" className="ml-auto shrink-0">
-              Currently linked
-            </Chip>
-          )}
-        </div>
-      </Radio.Content>
-    </Radio>
-  );
-}
 
-/**
- * A menu-style row inside the modal body. Full-width, hover state, right-side
- * chevron implied by the "danger" red tint for destructive actions.
- */
-function ActionRow({
-  label,
-  description,
-  onSelect,
-  danger,
-}: {
-  label: string;
-  description: string;
-  onSelect: () => void;
-  danger?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`flex flex-col items-start gap-1 rounded-lg border p-4 text-left transition hover:border-primary/60 ${
-        danger
-          ? "border-danger/30 bg-danger/5 hover:bg-danger/10"
-          : "border-border bg-surface"
-      }`}
-    >
-      <span
-        className={`text-sm font-semibold ${danger ? "text-danger" : "text-foreground"}`}
-      >
-        {label}
-      </span>
-      <span className="text-xs text-muted">{description}</span>
-    </button>
-  );
-}

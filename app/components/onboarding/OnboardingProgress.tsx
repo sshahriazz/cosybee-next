@@ -12,6 +12,10 @@ import { ProgressBar } from "@heroui/react";
  * bespoke `<div>` bar so the funnel picks up HeroUI's theme tokens
  * (accent colour, motion, sizing) and stays visually consistent with the
  * rest of the app's progress affordances.
+ *
+ * The percentage used to be printed opposite the step count, which said
+ * the same thing three ways — "Step 1 of 4", "25%", and the bar itself.
+ * It now lives only in the bar's ARIA value, where it costs no ink.
  */
 
 interface Props {
@@ -24,29 +28,28 @@ interface Props {
 export function OnboardingProgress({ step, total, title, description }: Props) {
   const pct = Math.max(0, Math.min(100, (step / total) * 100));
   return (
-    <div className="mb-8 flex flex-col gap-5">
+    <div className="mb-8 flex flex-col gap-6">
       <ProgressBar
         value={pct}
         color="accent"
         size="sm"
         aria-label="Onboarding progress"
       >
-        <div className="mb-2 flex items-center justify-between text-xs font-medium text-muted">
-          <span>
-            Step {step} of {total}
-          </span>
-          <ProgressBar.Output>{Math.round(pct)}%</ProgressBar.Output>
-        </div>
+        <p className="mb-2 text-xs font-medium text-muted">
+          Step {step} of {total}
+        </p>
         <ProgressBar.Track>
           <ProgressBar.Fill />
         </ProgressBar.Track>
       </ProgressBar>
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-2xl font-bold tracking-tight text-balance text-foreground sm:text-3xl">
           {title}
         </h1>
         {description && (
-          <p className="text-sm leading-relaxed text-muted">{description}</p>
+          <p className="max-w-prose text-sm leading-relaxed text-muted">
+            {description}
+          </p>
         )}
       </div>
     </div>
