@@ -28,6 +28,7 @@ export default function WorksWithAnySystem({
           description={description}
           buttonText={buttonText}
           href={href}
+          descClassName={"max-w-170"}
         />
       </div>
     </Section>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 // import AppStoreButton from "@/app/components/ui/AppStoreButton";
-import { CtaButton } from "@/app/components/ui/Cta";
+import { CtaArrow, CtaButton, CtaChevron } from "@/app/components/ui/Cta";
 import { Section } from "@/app/components/ui/Section";
 import deviceImg from "@/public/homepage-images/everything-connected-device-mockup.png";
 import ctaBgImg from "@/public/cta-bg.png";
@@ -62,8 +62,10 @@ export default function ReadyToReduce() {
               connected way. One system. One view. Total clarity.
             </p>{" "}
             <div className="mt-6 flex flex-wrap items-center md:justify-center gap-4 min-[1200px]:justify-start!">
-              <CtaButton href="/download-app" size="sm">
+              <CtaButton href="/download-app" size="sm" className="group gap-2">
                 Download free app
+                {/* <CtaArrow /> */}
+                {/* <CtaChevron /> */}
               </CtaButton>
               {/* <AppStoreButton appId={APP_STORE_ID} />
             <GooglePlayButton packageName={PLAY_STORE_PACKAGE_NAME} /> */}

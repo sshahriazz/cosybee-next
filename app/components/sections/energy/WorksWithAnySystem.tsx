@@ -13,9 +13,9 @@ export default function WorksWithAnySystem() {
         <CtaCard
           title="Works With Any Energy Setup"
           description={
-            "Compatible with smart meters, inverters, batteries, and EV chargers from all major brands. \n Plug-and-play setup in minutes."
+            "Compatible with smart meters, inverters, batteries, and EV chargers from all major brands. Plug and play setup in minutes."
           }
-          buttonText="Get Started Today"
+          buttonText="Get Started"
           href="/download-app"
         />
       </div>

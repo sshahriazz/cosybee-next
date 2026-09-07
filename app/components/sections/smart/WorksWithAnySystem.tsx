@@ -15,6 +15,7 @@ export default function WorksWithAnySystem() {
           description="Compatible with all major solar panel brands and inverters. Whether you have a small residential system or a larger commercial installation."
           buttonText="Learn More"
           href="/solar"
+          descClassName={"max-w-170"}
         />
       </div>
     </Section>
