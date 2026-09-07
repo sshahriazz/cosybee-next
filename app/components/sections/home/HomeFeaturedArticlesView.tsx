@@ -216,7 +216,7 @@ export function HomeFeaturedArticlesView({
         <Header viewAllHref={viewAllHref} />
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -left-24 top-6 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75 z-0"
+          className="pointer-events-none absolute -left-30 top-6 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75 z-0"
         />
         {articles.length > 3 ? (
           <FeaturedCarousel articles={articles} />
