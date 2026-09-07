@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { startTransition, useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  Alert,
   Button,
   Description,
   FieldError,
@@ -19,8 +20,15 @@ import {
   useOverlayState,
 } from "@heroui/react";
 import {
+  Check,
   CircleCheckFill,
-  CircleExclamationFill,
+  Cpu,
+  Envelope,
+  Eye,
+  EyeSlash,
+  House,
+  Lock,
+  ShieldCheck,
   Sun,
 } from "@gravity-ui/icons";
 import { connectSunSync } from "@/app/lib/connect-actions";
@@ -42,21 +50,25 @@ import type { SunSyncConnectResult } from "@/app/lib/connect-actions";
  * originally — no need to hold credentials in React state or ferry them
  * through hidden inputs.
  *
- * ### Redesign notes
+ * ### Design notes
  *
- *   • Header collapsed to a single tinted icon + title row — the step
- *     name lives in the 3-dot stepper below, not in a floating chip that
- *     duplicated the info.
- *   • Body has ONE focal card per step: credentials, plant picker, or
- *     inverter picker. Non-current-step markup is `hidden`, still in the
- *     DOM so its FormData values survive re-submits.
+ *   • EVERY colour here is a HeroUI semantic token. The dialog portals to
+ *     `document.body`, which sits OUTSIDE the `.efh-scope` wrapper that
+ *     defines `--efh-solar` and friends (app/globals.css) — an earlier
+ *     revision tinted the header icon and the active step dot with
+ *     `var(--efh-solar)` and both rendered as *nothing*, because the
+ *     custom property does not resolve in the portal. `warning-soft`
+ *     carries the same warm-amber "solar" reading and resolves anywhere.
+ *   • ONE focal block per step: credentials, plant picker, or inverter
+ *     picker. Non-current-step markup is `hidden` — still in the DOM so
+ *     its FormData values survive re-submits.
+ *   • The stepper stays mounted through loading and success so the
+ *     dialog keeps a stable anchor instead of re-shuffling under the
+ *     user mid-request.
  *   • Loading uses a centred `Spinner` + rotating ladder of honest
- *     messages instead of a small inline card that was easy to miss on
- *     Sunsynk's 3–8 s round-trip.
- *   • Success uses an inline `CircleCheckFill` + heading, so the modal
- *     feels like it acknowledged the click before dismissing.
- *   • Errors show as a compact banner at the top of the body with a
- *     matching `CircleExclamationFill` — same visual grammar as success.
+ *     messages — Sunsynk's round-trip is a genuine 3–8 s.
+ *   • Errors are a HeroUI `Alert status="danger"`, success a matching
+ *     `success-soft` card, so feedback shares one visual grammar.
  */
 
 const INITIAL: SunSyncConnectResult | null = null;
@@ -77,53 +89,64 @@ function firstKey(selection: "all" | Set<React.Key>): string | null {
 /** One of the three logical steps in the flow. */
 type Step = "credentials" | "plant" | "inverter";
 
+const STEPS: { key: Step; label: string }[] = [
+  { key: "credentials", label: "Sign in" },
+  { key: "plant", label: "Site" },
+  { key: "inverter", label: "Inverter" },
+];
+
 /**
- * 3-dot stepper at the top of the modal body. Highlights the current
- * step; upcoming steps sit muted. The plant / inverter dots only light
- * up when the account actually surfaces those pickers — for a single-
- * site / single-inverter Sunsynk account the visual stays honest
- * (`current` collapses back to "credentials" once resolved and the
- * modal closes on its own).
+ * Progress rail across the top of the body. Completed steps collapse to
+ * a check, the current step carries a focus ring, upcoming steps sit on
+ * `default` so they read as inert. Connectors are `flex-1` so the rail
+ * spans the dialog at any width.
+ *
+ * The Site / Inverter dots only ever light up when the account actually
+ * surfaces those pickers — for a single-site / single-inverter Sunsynk
+ * account the flow completes on step 1 and `isDone` fills the whole rail
+ * in one go, which is honest: nothing was skipped, there was nothing to
+ * pick.
  */
-function Stepper({ step }: { step: Step }) {
-  const steps: { key: Step; label: string }[] = [
-    { key: "credentials", label: "Sign in" },
-    { key: "plant", label: "Site" },
-    { key: "inverter", label: "Inverter" },
-  ];
-  const activeIdx = steps.findIndex((s) => s.key === step);
+function Stepper({ step, isDone }: { step: Step; isDone: boolean }) {
+  const activeIdx = isDone
+    ? STEPS.length
+    : STEPS.findIndex((s) => s.key === step);
+
   return (
-    <ol className="flex items-center gap-2 text-xs">
-      {steps.map((s, i) => {
-        const isActive = i === activeIdx;
-        const isDone = i < activeIdx;
+    <ol aria-label="Connection progress" className="flex w-full items-center">
+      {STEPS.map((s, i) => {
+        const done = i < activeIdx;
+        const current = i === activeIdx;
+        const isLast = i === STEPS.length - 1;
         return (
-          <li key={s.key} className="flex items-center gap-2">
+          <li
+            key={s.key}
+            aria-current={current ? "step" : undefined}
+            className={`flex items-center gap-2 ${isLast ? "" : "flex-1"}`}
+          >
             <span
-              className={`flex size-6 items-center justify-center rounded-full text-[11px] font-semibold transition-colors ${
-                isActive
-                  ? "bg-[color:var(--efh-solar)] text-white"
-                  : isDone
-                    ? "bg-[color:var(--efh-solar)]/20 text-[color:var(--efh-solar)]"
-                    : "bg-surface-secondary text-muted"
+              className={`flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold tabular-nums transition-colors ${
+                done
+                  ? "bg-accent-soft text-accent-soft-foreground"
+                  : current
+                    ? "bg-accent text-accent-foreground ring-4 ring-accent-soft"
+                    : "bg-default text-muted"
               }`}
             >
-              {isDone ? "✓" : i + 1}
+              {done ? <Check aria-hidden className="size-3.5" /> : i + 1}
             </span>
             <span
-              className={`font-medium ${
-                isActive ? "text-foreground" : "text-muted"
+              className={`text-xs font-medium whitespace-nowrap ${
+                current ? "text-foreground" : "text-muted"
               }`}
             >
               {s.label}
             </span>
-            {i < steps.length - 1 && (
+            {!isLast && (
               <span
                 aria-hidden
-                className={`ml-1 h-px w-6 ${
-                  isDone
-                    ? "bg-[color:var(--efh-solar)]/40"
-                    : "bg-separator"
+                className={`mx-2 h-px flex-1 transition-colors ${
+                  done ? "bg-accent-soft" : "bg-separator"
                 }`}
               />
             )}
@@ -155,41 +178,76 @@ function LoadingCard() {
     return () => clearTimeout(t);
   }, [step]);
   return (
-    <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-surface-secondary px-6 py-10 text-center">
+    <div
+      role="status"
+      className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-surface-secondary px-6 py-10 text-center"
+    >
       <Spinner size="lg" />
       <div className="flex flex-col gap-1">
-        <p className="text-base font-semibold text-foreground">
+        <p className="text-base font-medium text-foreground">
           Talking to Sunsynk
         </p>
-        <p className="text-sm text-muted">{SYNC_MESSAGES[step]}</p>
+        <p aria-live="polite" className="text-sm text-muted">
+          {SYNC_MESSAGES[step]}
+        </p>
       </div>
-    </div>
-  );
-}
-
-function ErrorBanner({ children }: { children: ReactNode }) {
-  return (
-    <div
-      role="alert"
-      className="flex items-start gap-2 rounded-lg border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
-    >
-      <CircleExclamationFill className="mt-0.5 size-4 shrink-0" />
-      <span className="flex-1">{children}</span>
     </div>
   );
 }
 
 function SuccessCard() {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-success/30 bg-success/5 px-6 py-8 text-center">
-      <CircleCheckFill className="size-8 text-success" />
+    <div
+      role="status"
+      className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-success-soft px-6 py-10 text-center"
+    >
+      <CircleCheckFill aria-hidden className="size-8 text-success" />
       <div className="flex flex-col gap-1">
-        <p className="text-base font-semibold text-foreground">
-          Sunsynk linked
-        </p>
+        <p className="text-base font-medium text-foreground">Sunsynk linked</p>
         <p className="text-sm text-muted">Taking you to the next step…</p>
       </div>
     </div>
+  );
+}
+
+/**
+ * Shared chrome for the two picker steps — a labelled, scroll-capped
+ * ListBox on its own surface. Both pickers are single-select and feed a
+ * hidden input, so the only things that vary are the legend, the items
+ * and the selection handler.
+ */
+function PickerFieldset({
+  legend,
+  hint,
+  ariaLabel,
+  selected,
+  onSelect,
+  fieldName,
+  children,
+}: {
+  legend: string;
+  hint: string;
+  ariaLabel: string;
+  selected: string | null;
+  onSelect: (key: string | null) => void;
+  fieldName: string;
+  children: ReactNode;
+}) {
+  return (
+    <Fieldset className="flex flex-col gap-2">
+      <Fieldset.Legend>{legend}</Fieldset.Legend>
+      <p className="text-xs text-muted">{hint}</p>
+      <ListBox
+        aria-label={ariaLabel}
+        selectionMode="single"
+        selectedKeys={selected ? new Set([selected]) : new Set()}
+        onSelectionChange={(keys) => onSelect(firstKey(keys))}
+        className="max-h-64 overflow-y-auto rounded-2xl border border-border bg-surface shadow-xs"
+      >
+        {children}
+      </ListBox>
+      <input type="hidden" name={fieldName} value={selected ?? ""} />
+    </Fieldset>
   );
 }
 
@@ -239,6 +297,10 @@ export function ConnectSunSyncModal({
     if (pickingInverter) setSelectedInverter(null);
   }, [pickingInverter]);
 
+  // Password reveal. Local to the dialog; resets on every mount, never
+  // persisted, and the toggle is keyboard-reachable inside the field.
+  const [showPassword, setShowPassword] = useState(false);
+
   // On success: close the modal and (in onboarding) navigate forward.
   const { close } = overlay;
   useEffect(() => {
@@ -246,9 +308,16 @@ export function ConnectSunSyncModal({
     const t = setTimeout(() => {
       close();
       if (successHref) router.push(successHref);
-    }, 700);
+    }, 900);
     return () => clearTimeout(t);
   }, [succeeded, successHref, close, router]);
+
+  const blurb =
+    currentStep === "plant"
+      ? "Pick the home this dashboard should read."
+      : currentStep === "inverter"
+        ? "Pick the inverter whose telemetry drives this dashboard."
+        : "Sign in with the same account you use for the Sunsynk app.";
 
   const submitLabel =
     currentStep === "plant"
@@ -259,9 +328,11 @@ export function ConnectSunSyncModal({
 
   // Credentials mounted for every step so re-submits carry them. Hidden
   // while the pickers or a syncing / success state own the body.
-  const showCredentialsInBody = currentStep === "credentials" && !isPending && !succeeded;
+  const showCredentialsInBody =
+    currentStep === "credentials" && !isPending && !succeeded;
   const showPlantInBody = currentStep === "plant" && !isPending && !succeeded;
-  const showInverterInBody = currentStep === "inverter" && !isPending && !succeeded;
+  const showInverterInBody =
+    currentStep === "inverter" && !isPending && !succeeded;
 
   // Submit button disabled when: action in flight, or the active picker
   // step has no selection. Credentials step relies on browser required-
@@ -274,11 +345,18 @@ export function ConnectSunSyncModal({
   return (
     <Modal state={overlay}>
       <Modal.Trigger>{children}</Modal.Trigger>
-      <Modal.Backdrop>
-        <Modal.Container size="lg" placement="center">
+      {/* Outside-click dismissal is off while a request is in flight, so a
+          stray click can't bin credentials the user already typed. The
+          footer's Cancel stays live throughout — there is always a
+          deliberate way out. */}
+      <Modal.Backdrop variant="blur" isDismissable={!isPending}>
+        <Modal.Container size="md" placement="center">
           <Modal.Dialog>
+            <Modal.CloseTrigger />
             {/* Form wraps every Modal slot so `type="submit"` on the
-                footer button is a natural form descendant.
+                footer button is a natural form descendant. The gap lives
+                here because `.modal__header/body/footer` ship with zeroed
+                margins and the dialog itself has no row gap.
 
                 🔴 `onSubmit` + `startTransition(() => formAction(fd))`
                 instead of `<Form action={formAction}>`. React 19 auto-
@@ -291,6 +369,7 @@ export function ConnectSunSyncModal({
                 flips and React logs a warning. */}
             <Form
               id={FORM_ID}
+              className="flex flex-col gap-5"
               onSubmit={(e) => {
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
@@ -299,31 +378,32 @@ export function ConnectSunSyncModal({
                 });
               }}
             >
-              <Modal.Header className="flex-row items-center gap-3">
-                <Modal.Icon className="bg-[color:var(--efh-solar)]/10 text-[color:var(--efh-solar)]">
-                  <Sun className="size-5" />
+              {/* `pe-10` keeps the copy clear of the absolutely-positioned
+                  close button in the top-right corner. */}
+              <Modal.Header className="flex-row items-start gap-3 pe-10">
+                <Modal.Icon className="bg-warning-soft text-warning-soft-foreground">
+                  <Sun aria-hidden className="size-5" />
                 </Modal.Icon>
-                <div className="flex-1">
+                <div className="flex flex-1 flex-col gap-1">
                   <Modal.Heading>Connect Sunsynk</Modal.Heading>
-                  <p className="mt-0.5 text-sm text-muted">
-                    {currentStep === "credentials"
-                      ? "Sign in with the same account you use for the Sunsynk app."
-                      : currentStep === "plant"
-                        ? "Pick the home this dashboard should read."
-                        : "Pick the inverter whose telemetry drives this dashboard."}
-                  </p>
+                  <p className="text-sm leading-5 text-muted">{blurb}</p>
                 </div>
               </Modal.Header>
 
               <Modal.Body className="flex flex-col gap-5">
-                {/* Stepper hidden on success / loading — no need to
-                    distract from the focal card that owns the moment. */}
-                {!isPending && !succeeded && <Stepper step={currentStep} />}
+                <Stepper step={currentStep} isDone={succeeded} />
 
                 {isPending && <LoadingCard />}
                 {succeeded && <SuccessCard />}
+
                 {!isPending && !succeeded && genericError && (
-                  <ErrorBanner>{genericError}</ErrorBanner>
+                  <Alert status="danger">
+                    <Alert.Indicator />
+                    <Alert.Content>
+                      <Alert.Title>Couldn&apos;t connect</Alert.Title>
+                      <Alert.Description>{genericError}</Alert.Description>
+                    </Alert.Content>
+                  </Alert>
                 )}
 
                 {/* Credentials — mounted for every step. `isRequired` only
@@ -335,6 +415,10 @@ export function ConnectSunSyncModal({
                   hidden={!showCredentialsInBody}
                   className="flex flex-col gap-4"
                 >
+                  <Fieldset.Legend className="sr-only">
+                    Sunsynk account
+                  </Fieldset.Legend>
+
                   <TextField
                     name="email"
                     type="email"
@@ -343,126 +427,152 @@ export function ConnectSunSyncModal({
                   >
                     <Label>Sunsynk email</Label>
                     <InputGroup variant="secondary">
+                      <InputGroup.Prefix>
+                        <Envelope aria-hidden className="size-4 text-muted" />
+                      </InputGroup.Prefix>
                       <InputGroup.Input
                         placeholder="you@example.com"
                         autoComplete="email"
                         inputMode="email"
                       />
                     </InputGroup>
-                    <Description>
-                      The email you use to sign in to the Sunsynk app.
-                    </Description>
                     <FieldError />
                   </TextField>
 
                   <TextField
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     isRequired={showCredentialsInBody}
                   >
                     <Label>Sunsynk password</Label>
                     <InputGroup variant="secondary">
-                      <InputGroup.Input autoComplete="current-password" />
+                      <InputGroup.Prefix>
+                        <Lock aria-hidden className="size-4 text-muted" />
+                      </InputGroup.Prefix>
+                      <InputGroup.Input
+                        placeholder="Your Sunsynk password"
+                        autoComplete="current-password"
+                      />
+                      <InputGroup.Suffix className="pe-1">
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          variant="ghost"
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                          onPress={() => setShowPassword((v) => !v)}
+                        >
+                          {showPassword ? (
+                            <EyeSlash aria-hidden className="size-4" />
+                          ) : (
+                            <Eye aria-hidden className="size-4" />
+                          )}
+                        </Button>
+                      </InputGroup.Suffix>
                     </InputGroup>
-                    <Description>
-                      Stored encrypted (AES-256-GCM); used only to talk to
-                      the Sunsynk API on your behalf.
-                    </Description>
                     <FieldError />
                   </TextField>
+
+                  {/* One reassurance block instead of three stacked
+                      paragraphs: what happens to the password, and what
+                      happens next. */}
+                  <div className="flex items-start gap-2.5 rounded-2xl bg-surface-secondary px-3.5 py-3">
+                    <ShieldCheck
+                      aria-hidden
+                      className="mt-0.5 size-4 shrink-0 text-success"
+                    />
+                    <p className="text-xs leading-5 text-muted">
+                      Stored encrypted (AES-256-GCM) and used only to talk to
+                      the Sunsynk API on your behalf. If your account has more
+                      than one site or inverter, you&apos;ll pick which to link
+                      next.
+                    </p>
+                  </div>
                 </Fieldset>
 
                 {showPlantInBody && "pickPlant" in result! && (
-                  <Fieldset className="flex flex-col gap-2">
-                    <Fieldset.Legend>Sites on this account</Fieldset.Legend>
-                    <ListBox
-                      aria-label="Sunsynk site"
-                      selectionMode="single"
-                      selectedKeys={
-                        selectedPlant ? new Set([selectedPlant]) : new Set()
-                      }
-                      onSelectionChange={(keys) =>
-                        setSelectedPlant(firstKey(keys))
-                      }
-                      className="max-h-64 overflow-y-auto rounded-xl border border-border bg-surface"
-                    >
-                      {result.pickPlant.map((plant) => (
-                        <ListBox.Item
-                          key={plant.id}
-                          id={plant.id}
-                          textValue={plant.label}
-                        >
-                          {plant.label}
-                        </ListBox.Item>
-                      ))}
-                    </ListBox>
-                    <input
-                      type="hidden"
-                      name="plantId"
-                      value={selectedPlant ?? ""}
-                    />
-                  </Fieldset>
+                  <PickerFieldset
+                    legend="Sites on this account"
+                    hint="Your Sunsynk account covers more than one home."
+                    ariaLabel="Sunsynk site"
+                    selected={selectedPlant}
+                    onSelect={setSelectedPlant}
+                    fieldName="plantId"
+                  >
+                    {result.pickPlant.map((plant) => (
+                      <ListBox.Item
+                        key={plant.id}
+                        id={plant.id}
+                        textValue={plant.label}
+                      >
+                        <House
+                          aria-hidden
+                          className="size-4 shrink-0 text-muted"
+                        />
+                        <Label>{plant.label}</Label>
+                        <ListBox.ItemIndicator />
+                      </ListBox.Item>
+                    ))}
+                  </PickerFieldset>
                 )}
 
                 {showInverterInBody && "pickInverter" in result! && (
-                  <Fieldset className="flex flex-col gap-2">
-                    <Fieldset.Legend>Inverters at this site</Fieldset.Legend>
-                    <ListBox
-                      aria-label="Sunsynk inverter"
-                      selectionMode="single"
-                      selectedKeys={
-                        selectedInverter
-                          ? new Set([selectedInverter])
-                          : new Set()
-                      }
-                      onSelectionChange={(keys) =>
-                        setSelectedInverter(firstKey(keys))
-                      }
-                      className="max-h-64 overflow-y-auto rounded-xl border border-border bg-surface"
-                    >
-                      {result.pickInverter.map((inv) => (
-                        <ListBox.Item
-                          key={inv.serial}
-                          id={inv.serial}
-                          textValue={inv.label}
-                        >
-                          {inv.label}
-                        </ListBox.Item>
-                      ))}
-                    </ListBox>
-                    <input
-                      type="hidden"
-                      name="inverterSerial"
-                      value={selectedInverter ?? ""}
-                    />
-                  </Fieldset>
-                )}
-
-                {showCredentialsInBody && (
-                  <p className="text-xs text-muted">
-                    If your account has more than one site or inverter,
-                    the next step lets you pick which one to link.
-                  </p>
+                  <PickerFieldset
+                    legend="Inverters at this site"
+                    hint="Telemetry is read from the one you pick."
+                    ariaLabel="Sunsynk inverter"
+                    selected={selectedInverter}
+                    onSelect={setSelectedInverter}
+                    fieldName="inverterSerial"
+                  >
+                    {result.pickInverter.map((inv) => (
+                      <ListBox.Item
+                        key={inv.serial}
+                        id={inv.serial}
+                        textValue={inv.label}
+                      >
+                        <Cpu
+                          aria-hidden
+                          className="size-4 shrink-0 text-muted"
+                        />
+                        <div className="flex flex-col">
+                          <Label>{inv.label}</Label>
+                          {/* Only when the label doesn't already carry the
+                              serial — several Sunsynk accounts name the
+                              inverter after it. */}
+                          {!inv.label.includes(inv.serial) && (
+                            <Description>Serial {inv.serial}</Description>
+                          )}
+                        </div>
+                        <ListBox.ItemIndicator />
+                      </ListBox.Item>
+                    ))}
+                  </PickerFieldset>
                 )}
               </Modal.Body>
 
-              <Modal.Footer className="items-center gap-2">
-                <Modal.CloseTrigger />
+              <Modal.Footer>
                 {!succeeded && (
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    isDisabled={submitDisabled}
-                  >
-                    {isPending ? (
-                      <>
-                        <Spinner size="sm" className="mr-2" />
-                        Working…
-                      </>
-                    ) : (
-                      submitLabel
-                    )}
-                  </Button>
+                  <>
+                    <Button slot="close" variant="tertiary">
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      isDisabled={submitDisabled}
+                    >
+                      {isPending ? (
+                        <>
+                          <Spinner size="sm" className="mr-2" />
+                          Connecting…
+                        </>
+                      ) : (
+                        submitLabel
+                      )}
+                    </Button>
+                  </>
                 )}
               </Modal.Footer>
             </Form>
