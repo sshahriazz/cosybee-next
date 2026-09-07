@@ -11,11 +11,11 @@ export default function WorksWithAnySystem() {
     <Section spacing="none" surface="surface">
       <div className="mx-auto max-w-360 pb-11 pt-4 px-4 lg:px-30">
         <CtaCard
-          title="Works With Any Energy Setup"
+          title="Works with any energy setup"
           description={
             "Compatible with smart meters, inverters, batteries, and EV chargers from all major brands. Plug and play setup in minutes."
           }
-          buttonText="Get Started"
+          buttonText="Get started"
           href="/download-app"
         />
       </div>

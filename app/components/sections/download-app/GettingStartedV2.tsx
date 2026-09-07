@@ -25,22 +25,22 @@ const STEPS: ReadonlyArray<{
   image: StaticImageData;
 }> = [
   {
-    title: "Download the App",
+    title: "Download the app",
     description: "From the App Store or Google Play.",
     image: downloadImg,
   },
   {
-    title: "Create Your Free Account",
+    title: "Create your free account",
     description: "Free sign-up, under a minute.",
     image: accountImg,
   },
   {
-    title: "Connect Your Home",
+    title: "Connect your home",
     description: "With your EPC data.",
     image: connectImg,
   },
   {
-    title: "Manage Everything in One Place",
+    title: "Manage everything in one place",
     description: "All your energy data, one dashboard.",
     image: homeImg,
   },

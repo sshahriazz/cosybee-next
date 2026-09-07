@@ -23,24 +23,24 @@ export default function EnergyMonitoring() {
         />
         {/* text */}
         <div className="z-9 flex flex-col  min-[1200px]:max-w-163.5">
-          <SectionTitle>AI-Powered Insights</SectionTitle>
+          <SectionTitle>AI-powered insights</SectionTitle>
           <SectionLead>
             See what&apos;s happening across your home energy system.
           </SectionLead>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="insights"
-              title="Live Solar Tracking"
+              title="Live solar tracking"
               description="Monitor solar production in real time."
             />
             <FeatureItem
               glyph="weather"
-              title="Weather-Based Forecasts"
+              title="Weather-based forecasts"
               description="Plan ahead with forecasts based on local weather conditions."
             />
             <FeatureItem
               glyph="energy"
-              title="Daily Energy Overview"
+              title="Daily energy overview"
               description="Understand production patterns and daily performance."
             />
           </div>

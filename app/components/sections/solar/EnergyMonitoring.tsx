@@ -24,26 +24,26 @@ export type EnergyMonitoringProps = {
 const DEFAULT_FEATURES: FeatureItemContent[] = [
   {
     glyph: "solar",
-    title: "Live Solar Production Tracking",
+    title: "Live solar production tracking",
     description:
       "Monitor your solar panel energy production in real-time. See exactly how much energy you're generating with instant updates.",
   },
   {
     glyph: "weather",
-    title: "Weather-Based Forecasts",
+    title: "Weather-based forecasts",
     description:
       "Get accurate predictions for your solar energy output based on upcoming weather patterns, helping you plan energy usage effectively.",
   },
   {
     glyph: "energy",
-    title: "Daily Energy Overview",
+    title: "Daily energy overview",
     description:
       "View comprehensive daily energy production with visual graphs showing peak generation times and total output.",
   },
 ];
 
 export default function EnergyMonitoring({
-  title = "Real-Time Energy Monitoring",
+  title = "Real-time energy monitoring",
   features = DEFAULT_FEATURES,
 }: EnergyMonitoringProps = {}) {
   return (

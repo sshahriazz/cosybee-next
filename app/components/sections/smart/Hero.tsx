@@ -12,8 +12,8 @@ export default function Hero() {
       imageAlt="hero image of smart "
     >
       <Heading as="h1" variant="display" className="whitespace-pre-line">
-        {"Works With \n Your "}
-        <span className="text-[#EFDF18]">Smart Home</span>
+        {"Works with \n your "}
+        <span className="text-[#EFDF18]">smart home</span>
       </Heading>
       <Text variant="heroLead" className="mt-5 max-w-145.5">
         Connect your solar system, battery and smart home devices to see
@@ -21,7 +21,7 @@ export default function Hero() {
         production, usage and savings — and make smarter decisions every day.
       </Text>
       <CtaButton href="/download-app" size="md" className="mt-10">
-        Get Started
+        Get started
       </CtaButton>
     </PageHero>
   );

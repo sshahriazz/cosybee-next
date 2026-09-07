@@ -149,7 +149,7 @@ function Slide({
           size="md"
           className="mt-8 w-full text-lg! h-13.25!"
         >
-          Read Article
+          Read article
         </CtaButton>
       </div>
     </article>

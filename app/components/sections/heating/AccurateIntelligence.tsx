@@ -21,24 +21,24 @@ export default function AccurateIntelligence() {
         {/* text */}
         <div className="z-9 flex flex-col min-[1200px]:max-w-163.5">
           <SectionTitle>
-            Accurate Intelligence for a Smarter, Greener Home
+            Accurate intelligence for a smarter, greener home
           </SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="insights"
-              title="High-Accuracy Energy Forecasting"
+              title="High-accuracy energy forecasting"
               description="Our models analyse real-time usage, system behaviour, and external conditions to predict heating demand with high precision."
               descWidth="w-full"
             />
             <FeatureItem
               glyph="weather"
-              title="Climate-Aware Intelligence"
+              title="Climate-aware intelligence"
               description="We integrate live weather and environmental data to continuously adapt energy predictions and reduce wasted heating cycles."
               descWidth="w-full"
             />
             <FeatureItem
               glyph="energy"
-              title="Efficiency-First System Design"
+              title="Efficiency-first system design"
               description="Every insight is built to reduce unnecessary energy consumption — helping you save money while lowering your carbon footprint."
               descWidth="w-full"
             />

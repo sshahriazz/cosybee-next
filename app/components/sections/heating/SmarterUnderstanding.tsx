@@ -18,22 +18,22 @@ export default function SmarterUnderstanding() {
         {/* text — left */}
         <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-145">
           <SectionTitle align="left">
-            A Smarter Understanding of Your Home
+            A smarter understanding of your home
           </SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
               glyph="energy"
-              title="Battery Optimisation Insights"
+              title="Battery optimisation insights"
               description="Improve how stored energy is used across your home system."
             />
             <FeatureCard
               glyph="home"
-              title="Connected Home Signals"
+              title="Connected home signals"
               description="Prepare your home for real-time energy coordination and future smart integrations."
             />
             <FeatureCard
               glyph="weather"
-              title="Indoor Air Quality Awareness"
+              title="Indoor air quality awareness"
               description="Monitor air quality conditions that affect comfort, health, and energy efficiency."
             />
           </div>

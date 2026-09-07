@@ -28,11 +28,11 @@ export default function HeatingSolutions() {
         />
         {/* text — right */}
         <div className="order-1 min-[1200px]:order-2 min-[1200px]:max-w-183.5 md:max-w-153.5 flex flex-col  z-9">
-          <SectionTitle>Heating Solutions</SectionTitle>
+          <SectionTitle>Heating solutions</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
               glyph="solar"
-              title="Live Solar Production Tracking"
+              title="Live solar production tracking"
               descClassName="whitespace-pre-line"
               description={
                 "Track solar production in real time.\n See how sunlight shapes your energy balance."
@@ -40,7 +40,7 @@ export default function HeatingSolutions() {
             />
             <FeatureCard
               glyph="weather"
-              title="Weather-Based Forecasts"
+              title="Weather-based forecasts"
               descClassName="whitespace-pre-line"
               description={
                 "See how weather affects your home energy.\n Plan ahead with clearer visibility."
@@ -48,7 +48,7 @@ export default function HeatingSolutions() {
             />
             <FeatureCard
               glyph="energy"
-              title="Daily Energy Overview"
+              title="Daily energy overview"
               descClassName="whitespace-pre-line"
               description={
                 "Understand how energy changes throughout the day. See patterns and peak demand."

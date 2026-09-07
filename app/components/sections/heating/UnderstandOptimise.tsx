@@ -18,24 +18,24 @@ export default function UnderstandOptimise() {
         {/* text — left */}
         <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-160">
           <SectionTitle align="left">
-            Understand and Optimise Your Home Energy Today
+            Understand and optimise your home energy today
           </SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="insights"
-              title="Real-Time Energy Forecasting"
+              title="Real-time energy forecasting"
               description="Predict heating demand using live usage patterns and system behaviour."
               descWidth="md:w-[60%]"
             />
             <FeatureItem
               glyph="weather"
-              title="Weather-Adaptive Insights"
+              title="Weather-adaptive insights"
               description="Adjust energy expectations based on local climate conditions."
               descWidth="md:w-[60%]"
             />
             <FeatureItem
               glyph="energy"
-              title="Daily Energy Overview"
+              title="Daily energy overview"
               description="A simple breakdown of energy usage, efficiency, and production every day."
               descWidth="md:w-[60%]"
             />

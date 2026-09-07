@@ -32,7 +32,7 @@ export default function WhyChoose() {
         {/* Tablet (550–1200px) keeps the column capped at the desktop width,
             left-aligned with the rest of the page. */}
         <div className="z-9 flex flex-col text-left min-[550px]:max-w-163.5">
-          <SectionTitle>Why Choose EnergieBee?</SectionTitle>
+          <SectionTitle>Why choose EnergieBee?</SectionTitle>
           <SectionLead className="max-w-163.5">
             Smarter energy. Lower cost. Smaller footprint.
           </SectionLead>
@@ -51,17 +51,17 @@ export default function WhyChoose() {
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="insights"
-              title="Smarter by Design"
+              title="Smarter by design"
               description="Built on predictive models that continuously learn from real household energy patterns."
             />
             <FeatureItem
               glyph="savings"
-              title="Built for Real Savings"
+              title="Built for real savings"
               description="Every optimisation is designed to reduce cost, not just display data."
             />
             <FeatureItem
               glyph="green"
-              title="Built for a Greener Future"
+              title="Built for a greener future"
               description="Less wasted energy means lower emissions — without changing your comfort or lifestyle."
             />
           </div>

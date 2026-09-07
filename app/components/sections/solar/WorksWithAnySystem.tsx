@@ -15,9 +15,9 @@ export type WorksWithAnySystemProps = {
  * section can be reused for other CTAs.
  */
 export default function WorksWithAnySystem({
-  title = "Works With Any Solar System",
+  title = "Works with any solar system",
   description = "Compatible with all major solar panel brands and inverters. Whether you have a small residential system or a larger commercial installation.",
-  buttonText = "Get Started",
+  buttonText = "Get started",
   href = "/download-app",
 }: WorksWithAnySystemProps = {}) {
   return (

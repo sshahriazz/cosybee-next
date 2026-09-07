@@ -28,7 +28,7 @@ export default function WhyEnergieBeeSolar() {
         />
         {/* text — left */}
         <div className="min-[1200px]:max-w-163.5 flex flex-col z-9">
-          <SectionTitle>Battery + Solar Ready</SectionTitle>
+          <SectionTitle>Battery + solar ready</SectionTitle>
           <SectionLead className="max-w-163.5">
             EnergieBee orchestrates your full energy stack — solar generation,
             battery storage, EV charging, and grid imports — to minimise cost at
@@ -37,19 +37,19 @@ export default function WhyEnergieBeeSolar() {
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
               glyph="sun"
-              title="Smart Charging"
+              title="Smart charging"
               description="Batteries and EVs charge from solar surplus first, off-peak grid second. The right power, the right time."
               descWidth="w-full"
             />
             <FeatureCard
               glyph="dollar"
-              title="Grid Export Optimisation"
+              title="Grid export optimisation"
               description="Sell to the grid when prices are high, store when they're low. Maximise export value automatically."
               descWidth="w-full"
             />
             <FeatureCard
               glyph="home"
-              title="Outage-Aware"
+              title="Outage-aware"
               description="When the grid drops, batteries take over critical loads automatically - fridge, lights, internet stay on."
               descWidth="w-full"
             />

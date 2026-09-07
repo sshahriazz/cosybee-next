@@ -16,23 +16,23 @@ const STEPS: ReadonlyArray<{
   image: StaticImageData;
 }> = [
   {
-    title: "Download the App",
+    title: "Download the app",
     description:
       "Everything you need to manage your home's heating, in one app.",
     image: downloadImg,
   },
   {
-    title: "Create Your Free Account",
+    title: "Create your free account",
     description: "Start for free with tailored heating and energy tips.",
     image: accountImg,
   },
   {
-    title: "Connect Your Home",
+    title: "Connect your home",
     description: "Link your home for smart heating and energy insights.",
     image: connectImg,
   },
   {
-    title: "Everything in One Place",
+    title: "Everything in one place",
     description: "Monitor, manage, and optimise your home's energy with ease.",
     image: homeImg,
   },

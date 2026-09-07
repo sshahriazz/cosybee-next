@@ -26,7 +26,7 @@ const BENEFITS: ReadonlyArray<{
   },
   {
     icon: pound,
-    title: "Reduce Your Bills",
+    title: "Reduce your bills",
     description: "Smart insights that show you where to cut costs",
   },
 ];

@@ -8,8 +8,8 @@ export default function Hero() {
   return (
     <PageHero bgImage={heroBgImg} bgImageMobile={heroBgImgMobile}>
       <Heading as="h1" variant="display" className="whitespace-pre-line">
-        {"Home Heating \n"}
-        <span className="text-[#EFDF18]">Intelligence</span>
+        {"Home heating \n"}
+        <span className="text-[#EFDF18]">intelligence</span>
       </Heading>
       <Text variant="heroLead" className="mt-5 max-w-165">
         Predictive energy intelligence that helps you understand, optimise, and
@@ -20,7 +20,7 @@ export default function Hero() {
         climate-aware intelligence that reduces waste, cost, and carbon impact.
       </Text>
       <CtaButton href="/download-app" size="md" className="mt-10">
-        Get Started
+        Get started
       </CtaButton>
     </PageHero>
   );

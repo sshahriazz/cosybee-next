@@ -19,7 +19,7 @@ export default function HomeSolarForecasting() {
         <DecorHex side="left" className="-top-10" />
         {/* text — left */}
         <div className="z-9 flex flex-col max-[1200px]:max-w-160 min-[1200px]:max-w-163.5">
-          <SectionTitle align="left">Solar Forecasting</SectionTitle>
+          <SectionTitle align="left">Solar forecasting</SectionTitle>
           {/* <p className="mt-3 max-w-xl text-base leading-relaxed max-[1200px]:text-center text-[#545454]">
             A complete view of solar production, weather, and usage across the
             day.
@@ -27,17 +27,17 @@ export default function HomeSolarForecasting() {
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
               glyph="solar"
-              title="Maximise Production"
+              title="Maximise production"
               description="See how your solar performs day by day."
             />
             <FeatureCard
               glyph="savings"
-              title="Track Savings"
+              title="Track savings"
               description="See how daily energy habits affect savings."
             />
             <FeatureCard
               glyph="insights"
-              title="Smart Insights"
+              title="Smart insights"
               description="Understand patterns across your home energy."
             />
           </div>

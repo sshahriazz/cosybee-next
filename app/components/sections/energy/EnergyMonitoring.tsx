@@ -20,22 +20,22 @@ export default function EnergyMonitoring() {
         />
         {/* text */}
         <div className="z-9 flex flex-col min-[1200px]:max-w-163.5">
-          <SectionTitle>Whole-Home Monitoring</SectionTitle>
+          <SectionTitle>Whole-home monitoring</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="energy"
-              title="Live Consumption Tracking"
+              title="Live consumption tracking"
               description="Real-time view of how much power your home is using, where it's coming from, and where it's going."
               descWidth="md:w-[80%]"
             />
             <FeatureItem
               glyph="device"
-              title="Per-Device Breakdown"
+              title="Per-device breakdown"
               description="Pinpoint the energy hogs in your home with AI-powered appliance disaggregation — no extra sensors needed."
             />
             <FeatureItem
               glyph="pound"
-              title="Tariff-Aware Forecasting"
+              title="Tariff-aware forecasting"
               description="See your projected bill at any moment of the day, so there are no end-of-month surprises."
             />
           </div>

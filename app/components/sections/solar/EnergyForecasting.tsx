@@ -23,7 +23,7 @@ export default function EnergyForecasting() {
       <Container className="mx-auto max-w-235 px-4 lg:px-0">
         <SectionHeader
           className="relative z-10 flex flex-col items-center"
-          title="Intelligent Energy Forecasting"
+          title="Intelligent energy forecasting"
           description="EnergieBee uses advanced weather data and AI to predict your solar energy production, helping you plan energy usage and maximise savings"
         />
 
@@ -37,7 +37,7 @@ export default function EnergyForecasting() {
                 className="w-52 self-start sm:w-56 lg:w-64"
               />
             }
-            title="Simulated Solar Forecasts"
+            title="Simulated solar forecasts"
             description="Our advanced simulation engine analyses real-time weather data, historical solar patterns, and your system's specific characteristics to deliver highly accurate solar production forecasts for your home."
             bullets={[
               "AI-powered 7-day solar simulations",
@@ -54,7 +54,7 @@ export default function EnergyForecasting() {
                 className="w-52 self-start sm:w-56 lg:w-64"
               />
             }
-            title="Smart Energy Usage Recommendations"
+            title="Smart energy usage recommendations"
             description="Get intelligent notifications on the best times to use high-energy appliances based on solar production forecasts, maximising your energy independence and savings."
             bullets={[
               "Optimal usage timing alerts",
@@ -67,9 +67,9 @@ export default function EnergyForecasting() {
         <CtaCard
           glyph="sun"
           glyphColor="#A3D055"
-          title="Reduce Energy Bills by Up to 40%"
+          title="Reduce energy bills by up to 40%"
           description="By using EnergieBee's smart forecasting and energy management recommendations, typical households can reduce their energy bills by 30-40%, maximising the value of their solar investment."
-          buttonText="Start Monitoring"
+          buttonText="Start monitoring"
           href="/start"
           titleClassName="!text-[25px] "
           descClassName="!text-sm"

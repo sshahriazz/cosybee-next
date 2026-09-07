@@ -17,26 +17,26 @@ export type SmartEnergyManagementProps = {
 const DEFAULT_FEATURES: FeatureItemContent[] = [
   {
     glyph: "energy",
-    title: "Battery Optimisation",
+    title: "Battery optimisation",
     description:
       "Get intelligent recommendations on when to store or use your solar energy to maximise savings and reduce grid dependency.",
   },
   {
     glyph: "connect",
-    title: "Smart Device Integration",
+    title: "Smart device integration",
     description:
       "Connect to your smart home devices and optimise their energy usage based on your solar production patterns.",
   },
   {
     glyph: "savings",
-    title: "ROI Tracking",
+    title: "ROI tracking",
     description:
       "Track your return on investment with detailed financial calculations. See exactly how long until your solar panels pay for themselves.",
   },
 ];
 
 export default function SmartEnergyManagement({
-  title = "Smart Energy Management",
+  title = "Smart energy management",
   features = DEFAULT_FEATURES,
   imageSrc = sideImg.src,
 }: SmartEnergyManagementProps = {}) {
