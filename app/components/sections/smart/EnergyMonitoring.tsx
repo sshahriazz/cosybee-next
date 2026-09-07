@@ -1,16 +1,10 @@
-// import { HIVE_3_PLACEMENTS, HIVE_3_VIEWBOX } from "@/app/lib/hex";
 import Hexagon from "@/app/components/ui/Hexagon";
-// import SharedImageHexCluster from "@/app/components/ui/SharedImageHexCluster";
 import {
   FeatureItem,
   SectionLead,
   SectionTitle,
 } from "@/app/components/ui/SectionContent";
-// import sideImage from "@/public/energy-monitoring.png";
-import HiveHexCluster from "@/app/components/ui/HiveHexCluster";
-import deviceImg from "@/public/smart/energiebee-app-home-heating-spend-graph.png";
-import beeDisplayImg from "@/public/ss-image/ss-small-10.png";
-import smartSwitchImg from "@/public/ss-image/ss-small-1.png";
+import featureImage from "@/public/smart/ai-powered-insights.png";
 import { AppImage as Image } from "@/app/components/ui/AppImage";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
@@ -18,32 +12,13 @@ export default function EnergyMonitoring() {
   return (
     <Section surface="surface" spacing="md" className="text-foreground">
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-2 min-[1200px]:gap-38">
-        {/* uniform 3-hex hive cluster */}
-
-        <HiveHexCluster
-          className="mx-auto w-full max-w-100 sm:max-w-110 lg:max-w-125.5 z-9"
-          gap={5}
-          cornerInset={4}
-          left={{
-            src: beeDisplayImg,
-            alt: "EnergieBee desktop display",
-            color: "#C9CBCD",
-          }}
-          topRight={{
-            src: smartSwitchImg,
-            alt: "Smart switch on a wall",
-            color: "#E9EAEC",
-          }}
-          bottomRight={{
-            color: "#E9E19E",
-            children: (
-              <Image
-                src={deviceImg}
-                alt="energie Bee app screen"
-                className="absolute left-1/2 top-[12%] w-[59%] -translate-x-1/2"
-              />
-            ),
-          }}
+        {/* artwork */}
+        <Image
+          src={featureImage}
+          alt="A rooftop array and the app's solar cycle in hand, beside a weekly electricity view: £10.45 spent, £3.26 of it standing charge"
+          sizes="(min-width: 1200px) 524px, (min-width: 1024px) calc(100vw - 240px), (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)"
+          quality={100}
+          className="z-9"
         />
         {/* text */}
         <div className="relative min-[1200px]:static z-9 flex flex-col  min-[1200px]:max-w-163.5">

@@ -4,14 +4,14 @@ import {
   SectionTitle,
 } from "@/app/components/ui/SectionContent";
 import { AppImage as Image } from "@/app/components/ui/AppImage";
-import deviceImg from "@/public/smart/energiebee-app-energy-at-a-glance.png";
+import featureImage from "@/public/smart/works-with-your-smart-home.png";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 import Hexagon from "../../ui/Hexagon";
 
 export default function WhyEnergieBee() {
-  // Two-column band: title + lead + feature cards on the left, phone mockup on
-  // the right. Tight bottom below 1200px — the WorksWithAnySystem CTA follows
+  // Two-column band: title + lead + feature cards on the left, artwork on the
+  // right. Tight bottom below 1200px — the WorksWithAnySystem CTA follows
   // directly on /smart, so this band hugs it.
   return (
     <Section surface="base" spacing="lg" className="pb-8 min-[1200px]:pb-20">
@@ -53,14 +53,13 @@ export default function WhyEnergieBee() {
           </div>
         </div>
 
-        {/* phone — right */}
-        <div className="mx-auto w-full max-w-86.5">
+        {/* artwork — right */}
+        <div className="z-9 mx-auto w-full">
           <Image
-            src={deviceImg}
-            alt="energy analytics dashboard"
-            sizes="(min-width: 1200px) 346px, 280px"
-            quality={85}
-            className="h-auto w-full"
+            src={featureImage}
+            alt="An EnergieBee room display beside the app's live flow — 170 W solar, 350 W imported, 870 W to the house — and a £10.45 week"
+            sizes="(min-width: 1200px) 523px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)"
+            quality={100}
           />
         </div>
       </Container>

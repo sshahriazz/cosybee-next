@@ -3,15 +3,15 @@ import {
   SectionLead,
   SectionTitle,
 } from "@/app/components/ui/SectionContent";
-import deviceImg from "@/public/smart/energiebee-app-weekly-energy-spend-overview.png";
+import featureImage from "@/public/smart/energy-and-savings.png";
 import { AppImage as Image } from "@/app/components/ui/AppImage";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 import Hexagon from "../../ui/Hexagon";
 
 export default function EnergyAnalytics() {
-  // Two-column band: title + features on the left, phone mockup on the right.
-  // Stacks text-then-phone below 1200px.
+  // Two-column band: title + features on the left, artwork on the right.
+  // Stacks text-then-artwork below 1200px.
   return (
     <Section surface="base" spacing="lg">
       <Container
@@ -48,15 +48,13 @@ export default function EnergyAnalytics() {
           </div>
         </div>
 
-        {/* phone — right. Wrapper owns the width; the image fills it via
-            w-full h-auto so it scales proportionally. */}
-        <div className="mx-auto w-full max-w-75">
+        {/* artwork — right */}
+        <div className="z-9 mx-auto w-full">
           <Image
-            src={deviceImg}
-            alt="energy analytics dashboard"
-            sizes="(min-width: 1200px) 300px, 280px"
-            quality={85}
-            className="h-auto w-full"
+            src={featureImage}
+            alt="The app's energy routing — 4% of the home ran without the grid today — beside a carbon reading of 41.8 g CO2 per kWh, 43% cleaner"
+            sizes="(min-width: 1200px) 523px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)"
+            quality={100}
           />
         </div>
       </Container>
