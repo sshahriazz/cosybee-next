@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Chip, Radio, RadioGroup } from "@heroui/react";
+import { Alert, Button, Chip, Label, Radio, RadioGroup } from "@heroui/react";
 import {
   createPropertyFromEpc,
   createPropertyWithoutEpc,
@@ -26,6 +26,13 @@ import {
  * Either branch can also flip into the no-EPC fallback via a link, so a
  * multi-row postcode result isn't a dead end for someone whose home
  * genuinely isn't in the list.
+ *
+ * ### Design notes
+ *
+ * Flush with the progress bar and title, like every other step — no
+ * wrapping panel. The two hand-rolled status boxes (a red div and an
+ * amber one) are HeroUI `Alert`s now, so failures and the no-EPC
+ * fallback look the same here as they do in the connect dialogs.
  */
 
 interface Props {
@@ -70,48 +77,44 @@ export function BuildingProfileClient({ address, epcs }: Props) {
     <div className="flex flex-col gap-6">
       {/* Selected address summary — the user can click "Change" to go back
           to step 1 if they picked the wrong one. */}
-      <div className="rounded-lg border border-border bg-surface p-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <p className="text-xs uppercase tracking-wide text-muted">Your home</p>
-            <p className="text-sm font-semibold text-foreground">
-              {displayAddress(address)}
-            </p>
-            <p className="text-xs text-muted">{address.postcode}</p>
-          </div>
-          <Button
-            variant="tertiary"
-            size="sm"
-            isDisabled={navigating || pending}
-            onPress={() =>
-              startNavigation(() => router.push("/onboarding/address"))
-            }
-          >
-            {navigating ? "Loading…" : "Change"}
-          </Button>
+      <div className="flex items-start justify-between gap-4 rounded-2xl bg-surface-secondary px-4 py-3.5">
+        <div className="flex flex-col gap-0.5">
+          <p className="text-xs font-medium text-muted">Your home</p>
+          <p className="text-sm font-medium text-foreground">
+            {displayAddress(address)}
+          </p>
+          <p className="text-xs text-muted">{address.postcode}</p>
         </div>
+        <Button
+          variant="tertiary"
+          size="sm"
+          isDisabled={navigating || pending}
+          onPress={() =>
+            startNavigation(() => router.push("/onboarding/address"))
+          }
+        >
+          {navigating ? "Loading…" : "Change"}
+        </Button>
       </div>
 
       {error && (
-        <div
-          role="alert"
-          className="rounded-md border border-danger/30 bg-danger/10 p-3 text-sm text-danger"
-        >
-          {error}
-        </div>
+        <Alert status="danger">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>{error}</Alert.Description>
+          </Alert.Content>
+        </Alert>
       )}
 
       {epcs.length > 1 && !useNoEpc && (
         <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium text-foreground">
-            We found {epcs.length} EPCs for this postcode. Pick yours:
-          </p>
           <RadioGroup
             aria-label="EPC certificate"
             value={certificateNumber}
             onChange={setCertificateNumber}
             className="flex flex-col gap-2"
           >
+            <Label>Which one is your home?</Label>
             {epcs.map((cert) => (
               <Radio key={cert.certificateNumber} value={cert.certificateNumber}>
                 <div className="flex flex-col">
@@ -144,37 +147,40 @@ export function BuildingProfileClient({ address, epcs }: Props) {
       )}
 
       {(epcs.length === 0 || useNoEpc) && (
-        <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm text-warning-foreground">
-          <p className="font-semibold">
-            {epcs.length === 0
-              ? "We couldn't find an EPC for this postcode."
-              : "Continue without an EPC."}
-          </p>
-          <p className="mt-1 text-warning-foreground/80">
-            No problem &mdash; we&apos;ll set your home up from the address
-            alone. You can add EPC details later from Settings.
-          </p>
-          {epcs.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setUseNoEpc(false)}
-              className="mt-3 text-xs underline underline-offset-2"
-            >
-              Actually, let me pick from the EPC list
-            </button>
-          )}
-        </div>
+        <Alert status="warning">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>
+              {epcs.length === 0
+                ? "No EPC on the register for this postcode"
+                : "Continuing without an EPC"}
+            </Alert.Title>
+            <Alert.Description>
+              We&apos;ll set your home up from the address alone. You can add
+              EPC details later from Settings.
+            </Alert.Description>
+            {epcs.length > 0 && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="mt-2 self-start"
+                onPress={() => setUseNoEpc(false)}
+              >
+                Pick from the EPC list instead
+              </Button>
+            )}
+          </Alert.Content>
+        </Alert>
       )}
 
-      <div className="flex items-center justify-end gap-3">
-        <Button
-          variant="primary"
-          onPress={handleCreate}
-          isDisabled={pending || (!useNoEpc && certificateNumber.length === 0)}
-        >
-          {pending ? "Setting up your home…" : "Continue"}
-        </Button>
-      </div>
+      <Button
+        className="self-start"
+        variant="primary"
+        onPress={handleCreate}
+        isDisabled={pending || (!useNoEpc && certificateNumber.length === 0)}
+      >
+        {pending ? "Setting up your home…" : "Continue"}
+      </Button>
     </div>
   );
 }

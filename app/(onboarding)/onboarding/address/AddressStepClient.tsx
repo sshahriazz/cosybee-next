@@ -2,8 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Card, Spinner } from "@heroui/react";
-import { Geo } from "@gravity-ui/icons";
+import { Spinner } from "@heroui/react";
 import { OnboardingProgress } from "@/app/components/onboarding/OnboardingProgress";
 import { AddressSearch } from "@/app/components/onboarding/AddressSearch";
 
@@ -18,8 +17,16 @@ import { AddressSearch } from "@/app/components/onboarding/AddressSearch";
  *
  * The navigation runs inside `useTransition` so `isPending` covers the
  * full "picked → next server-rendered step is ready" window, and the
- * card swaps to a "Looking up your home…" state instead of leaving the
+ * field swaps to a "Looking up your home…" line instead of leaving the
  * user staring at their search box for 1–2 s while the EPC lookup runs.
+ *
+ * ### Design notes
+ *
+ * The step is one labelled field, flush with the heading above it. It
+ * used to be a `Card` holding an icon row that repeated the label, the
+ * field, and an `Alert` that repeated the page subtitle — a lot of
+ * chrome around a single input. The card is gone, so the field aligns
+ * with the progress bar and the title on the same left edge.
  */
 export function AddressStepClient() {
   const router = useRouter();
@@ -31,62 +38,29 @@ export function AddressStepClient() {
         step={1}
         total={4}
         title="Where do you live?"
-        description="We use your address to look up your home's EPC and pull region-specific tariff data."
+        description="We use your address to find your home's EPC and your local tariff rates."
       />
-      <Card variant="default">
-        <Card.Content className="flex flex-col gap-6 p-6 sm:p-8">
-          <div className="flex items-start gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-              <Geo className="size-5" />
-            </span>
-            <div className="flex-1">
-              <h2 className="text-sm font-semibold text-foreground">
-                Address or postcode
-              </h2>
-              <p className="mt-0.5 text-xs text-muted">
-                Start typing and pick your home from the list.
-              </p>
-            </div>
-          </div>
 
-          {pending ? (
-            <div className="flex items-center gap-3 rounded-lg border border-border bg-surface-secondary p-4">
-              <Spinner size="sm" />
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-foreground">
-                  Looking up your home…
-                </p>
-                <p className="text-xs text-muted">
-                  Fetching the EPC record and preparing the next step.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <AddressSearch
-              autoFocus
-              onPick={(key, label) => {
-                const q = new URLSearchParams({ key, label }).toString();
-                startTransition(() =>
-                  router.push(`/onboarding/building-profile?${q}`),
-                );
-              }}
-            />
-          )}
-
-          <Alert status="default">
-            <Alert.Indicator />
-            <Alert.Content>
-              <Alert.Title>How we use your address</Alert.Title>
-              <Alert.Description>
-                Your address is used to fetch a public EPC record for the
-                property and to bucket you into the correct GB electricity
-                distribution region — nothing else. We never share it with
-                third parties.
-              </Alert.Description>
-            </Alert.Content>
-          </Alert>
-        </Card.Content>
-      </Card>
+      {pending ? (
+        <div role="status" className="flex items-center gap-3">
+          <Spinner size="sm" />
+          <p className="text-sm text-muted">
+            Looking up your home — fetching the EPC record…
+          </p>
+        </div>
+      ) : (
+        <AddressSearch
+          autoFocus
+          label="Address or postcode"
+          description="Start typing, then pick your home from the list."
+          onPick={(key, label) => {
+            const q = new URLSearchParams({ key, label }).toString();
+            startTransition(() =>
+              router.push(`/onboarding/building-profile?${q}`),
+            );
+          }}
+        />
+      )}
     </>
   );
 }

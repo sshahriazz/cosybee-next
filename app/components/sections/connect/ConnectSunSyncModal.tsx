@@ -8,15 +8,12 @@ import {
   Alert,
   Button,
   Description,
-  FieldError,
   Fieldset,
   Form,
-  InputGroup,
   Label,
   ListBox,
   Modal,
   Spinner,
-  TextField,
   useOverlayState,
 } from "@heroui/react";
 import {
@@ -24,13 +21,12 @@ import {
   CircleCheckFill,
   Cpu,
   Envelope,
-  Eye,
-  EyeSlash,
   House,
-  Lock,
   ShieldCheck,
   Sun,
 } from "@gravity-ui/icons";
+import { TextInputField } from "@/app/components/ui/TextInputField";
+import { PasswordField } from "@/app/components/ui/PasswordField";
 import { connectSunSync } from "@/app/lib/connect-actions";
 import type { SunSyncConnectResult } from "@/app/lib/connect-actions";
 
@@ -297,10 +293,6 @@ export function ConnectSunSyncModal({
     if (pickingInverter) setSelectedInverter(null);
   }, [pickingInverter]);
 
-  // Password reveal. Local to the dialog; resets on every mount, never
-  // persisted, and the toggle is keyboard-reachable inside the field.
-  const [showPassword, setShowPassword] = useState(false);
-
   // On success: close the modal and (in onboarding) navigate forward.
   const { close } = overlay;
   useEffect(() => {
@@ -419,60 +411,25 @@ export function ConnectSunSyncModal({
                     Sunsynk account
                   </Fieldset.Legend>
 
-                  <TextField
+                  <TextInputField
                     name="email"
                     type="email"
+                    label="Sunsynk email"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    inputMode="email"
+                    icon={<Envelope aria-hidden className="size-4 text-muted" />}
                     isRequired={showCredentialsInBody}
                     autoFocus={showCredentialsInBody}
-                  >
-                    <Label>Sunsynk email</Label>
-                    <InputGroup variant="secondary">
-                      <InputGroup.Prefix>
-                        <Envelope aria-hidden className="size-4 text-muted" />
-                      </InputGroup.Prefix>
-                      <InputGroup.Input
-                        placeholder="you@example.com"
-                        autoComplete="email"
-                        inputMode="email"
-                      />
-                    </InputGroup>
-                    <FieldError />
-                  </TextField>
+                  />
 
-                  <TextField
+                  <PasswordField
                     name="password"
-                    type={showPassword ? "text" : "password"}
+                    label="Sunsynk password"
+                    placeholder="Your Sunsynk password"
+                    autoComplete="current-password"
                     isRequired={showCredentialsInBody}
-                  >
-                    <Label>Sunsynk password</Label>
-                    <InputGroup variant="secondary">
-                      <InputGroup.Prefix>
-                        <Lock aria-hidden className="size-4 text-muted" />
-                      </InputGroup.Prefix>
-                      <InputGroup.Input
-                        placeholder="Your Sunsynk password"
-                        autoComplete="current-password"
-                      />
-                      <InputGroup.Suffix className="pe-1">
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="ghost"
-                          aria-label={
-                            showPassword ? "Hide password" : "Show password"
-                          }
-                          onPress={() => setShowPassword((v) => !v)}
-                        >
-                          {showPassword ? (
-                            <EyeSlash aria-hidden className="size-4" />
-                          ) : (
-                            <Eye aria-hidden className="size-4" />
-                          )}
-                        </Button>
-                      </InputGroup.Suffix>
-                    </InputGroup>
-                    <FieldError />
-                  </TextField>
+                  />
 
                   {/* One reassurance block instead of three stacked
                       paragraphs: what happens to the password, and what
