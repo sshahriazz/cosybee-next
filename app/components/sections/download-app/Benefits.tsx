@@ -43,6 +43,7 @@ export default function Benefits() {
         <SectionHeader
           title="How will you benefit?"
           description="Simple insights that help you save money from day one"
+          className="flex flex-col items-center"
         />
 
         <div className="mt-12 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-0 md:divide-x md:divide-border">

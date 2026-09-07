@@ -125,6 +125,7 @@ export default function GettingStartedV2() {
             <SectionHeader
               title="Up and running in four steps"
               description="From install to insight in one evening — the app guides you through each step."
+              className="flex flex-col items-center"
             />
 
             <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 items-center gap-10 lg:mt-10 lg:grid-cols-2 lg:gap-16">
