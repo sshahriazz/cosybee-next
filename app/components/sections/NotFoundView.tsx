@@ -3,7 +3,7 @@ import { AppLink as Link } from "@/app/components/ui/AppLink";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 import { Heading, Text } from "@/app/components/ui/Typography";
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import {
   CTA_BASE_CLASSES,
   CTA_SIZE_CLASSES,
@@ -172,13 +172,11 @@ export default function NotFoundView({
 
         <Container>
           {/* decorative cream hexes bleeding in from both edges */}
-          <Hexagon
-            color="#F7F2E1"
-            className="pointer-events-none absolute -top-16 -right-24 w-[16rem] sm:-right-36 sm:w-88 lg:w-76.75 dark:opacity-15"
-          />
-          <Hexagon
-            color="#F7F2E1"
-            className="pointer-events-none absolute bottom-2 -left-14 hidden w-28 sm:block sm:w-36 dark:opacity-15"
+          <DecorHex side="right" className="-top-16 w-64 dark:opacity-15" />
+          <DecorHex
+            side="left"
+            size="sm"
+            className="bottom-2 hidden sm:block dark:opacity-15"
           />
 
           {/* 404 watermark — centred on the copy block (which is z-10) and

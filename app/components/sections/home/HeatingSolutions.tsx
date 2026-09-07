@@ -1,4 +1,4 @@
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import { FeatureCard, SectionTitle } from "@/app/components/ui/SectionContent";
 import { AppImage as Image } from "@/app/components/ui/AppImage";
 import { Container } from "@/app/components/ui/Container";
@@ -16,10 +16,7 @@ export default function HeatingSolutions() {
     <Section spacing="lg" surface="none" className="text-foreground ">
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-[1fr_1fr] min-[1200px]:gap-38">
         {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
-        />
+        <DecorHex side="right" className="-top-10" />
         {/* artwork — left. Ordered after the text below 1200px, where the
             single column reads title first. */}
         <Image

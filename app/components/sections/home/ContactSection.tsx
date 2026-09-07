@@ -5,6 +5,7 @@ import { Button, Input, TextField, TextArea } from "@heroui/react";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 
 function EnvelopeIcon() {
   return (
@@ -48,13 +49,15 @@ export default function ContactSection() {
     <Section spacing="none" surface="dark" className="isolate">
       <Container className="py-20 lg:py-25">
         {/* decorative side hexes bleeding in from left + right */}
-        <Hexagon
+        <DecorHex
+          side="left"
           color="#7A6F1C"
-          className="pointer-events-none absolute -left-40 top-100 -z-10 w-80 -translate-y-1/2 sm:-left-44 sm:w-lg"
+          className="top-100 -translate-y-1/2 w-80 sm:w-lg lg:w-lg"
         />
-        <Hexagon
+        <DecorHex
+          side="right"
           color="#4A5F7A"
-          className="pointer-events-none absolute -right-40 top-12 -z-10 w-72 sm:-right-44 sm:w-96"
+          className="top-12 w-72 sm:w-96 lg:w-96"
         />
 
         {/* headline + decorative hex behind it */}

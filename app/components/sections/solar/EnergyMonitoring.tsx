@@ -1,4 +1,4 @@
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import {
   FeatureItem,
   type GlyphName,
@@ -49,6 +49,7 @@ export default function EnergyMonitoring({
   return (
     <Section surface="surface" spacing="md" className="text-foreground">
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-[1fr_1.25fr] min-[1200px]:gap-32">
+        <DecorHex side="right" className="-top-13.5" />
         {/* artwork */}
         <Image
           src={featureImage}
@@ -58,12 +59,7 @@ export default function EnergyMonitoring({
           className="z-9 object-cover object-right"
         />
         {/* text */}
-        <div className="relative min-[1200px]:static z-9 flex flex-col min-[1200px]:max-w-165">
-          {/* cream decorative hex bleeding from the top-right */}
-          <Hexagon
-            color="#F7F2E1"
-            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-13.5 w-[18rem] sm:-right-27 sm:w-88 lg:w-76.75"
-          />
+        <div className="z-9 flex flex-col min-[1200px]:max-w-165">
           <SectionTitle>{title}</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-8">
             {features.map((f) => (

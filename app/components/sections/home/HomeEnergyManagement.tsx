@@ -1,7 +1,7 @@
 import { FeatureCard, SectionTitle } from "@/app/components/ui/SectionContent";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import { AppImage as Image } from "@/app/components/ui/AppImage";
 import featureImage from "@/public/homepage-images/energy-management.png";
 
@@ -13,6 +13,7 @@ export default function HomeEnergyManagement() {
   return (
     <Section spacing="lg" surface="base" className="text-white">
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-[1fr_1fr] min-[1200px]:gap-35">
+        <DecorHex side="right" className="-top-10" />
         {/* artwork */}
         <Image
           src={featureImage}
@@ -22,12 +23,7 @@ export default function HomeEnergyManagement() {
           className="z-9"
         />
         {/* text — left */}
-        <div className="relative min-[1200px]:static flex flex-col  z-9">
-          {/* cream decorative hex bleeding from the top-left */}
-          <Hexagon
-            color="#F7F2E2"
-            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:left-auto sm:-right-28 sm:w-88 lg:w-76.75"
-          />
+        <div className="flex flex-col  z-9">
           <div className="max-w-163.5">
             <SectionTitle>Energy Management</SectionTitle>
             {/* <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">

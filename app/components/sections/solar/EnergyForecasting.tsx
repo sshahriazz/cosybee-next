@@ -4,22 +4,23 @@ import { AppImage as Image } from "@/app/components/ui/AppImage";
 import forecastImg from "@/public/solar/simulated-solar-forecasts.png";
 import recommendationsImg from "@/public/solar/smart-energy-usage-recommendations.png";
 import { Section } from "../../ui/Section";
-import Hexagon from "../../ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import { Container } from "@/app/components/ui/Container";
 
 export default function EnergyForecasting() {
   return (
     <Section surface="surface" spacing="md" overflow="visible">
+      {/* This band opts out of the section clip for its card shadows, so the
+          hexes bring their own — without it the bleed would add page scroll.
+          The wrapper spans the section rather than the (narrower) container,
+          so it clips at the window edge and DecorHex still measures the rail
+          from the window; the offsets are the band's padding less the usual
+          -top-10 / -bottom-10. */}
+      <div className="pointer-events-none absolute inset-0 overflow-x-clip">
+        <DecorHex side="left" className="top-6 lg:top-10" />
+        <DecorHex side="right" className="bottom-6 lg:bottom-10" />
+      </div>
       <Container className="mx-auto max-w-235 px-4 lg:px-0">
-        {/* cream decorative hex bleeding from the top-left */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75 z-0"
-        />
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -right-24 -bottom-10 w-[18rem] sm:-right-56 sm:w-88 lg:w-76.75 z-0"
-        />
         <SectionHeader
           className="relative z-10 flex flex-col items-center"
           title="Intelligent Energy Forecasting"

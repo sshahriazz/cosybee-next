@@ -1,4 +1,4 @@
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import {
   FeatureCard,
   SectionLead,
@@ -17,6 +17,7 @@ export default function WhyEnergieBeeSolar() {
       className="py-16 pb-8 text-foreground lg:py-20 lg:pb-10"
     >
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-2 min-[1200px]:gap-16">
+        <DecorHex side="right" className="-top-10" />
         {/* artwork */}
         <Image
           src={featureImage}
@@ -26,12 +27,7 @@ export default function WhyEnergieBeeSolar() {
           className="z-9"
         />
         {/* text — left */}
-        <div className="relative min-[1200px]:static min-[1200px]:max-w-163.5 flex flex-col z-9">
-          {/* cream decorative hex bleeding from the top-left */}
-          <Hexagon
-            color="#F7F2E1"
-            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
-          />
+        <div className="min-[1200px]:max-w-163.5 flex flex-col z-9">
           <SectionTitle>Battery + Solar Ready</SectionTitle>
           <SectionLead className="max-w-163.5">
             EnergieBee orchestrates your full energy stack — solar generation,

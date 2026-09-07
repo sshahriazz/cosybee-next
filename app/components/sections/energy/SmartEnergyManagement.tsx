@@ -1,4 +1,4 @@
-import Hexagon from "@/app/components/ui/Hexagon";
+import DecorHex from "@/app/components/ui/DecorHex";
 import { FeatureItem, SectionTitle } from "@/app/components/ui/SectionContent";
 import featureImage from "@/public/energy/smart-tariff-control.png";
 import Image from "next/image";
@@ -9,6 +9,7 @@ export default function SmartEnergyManagement() {
   return (
     <Section spacing="md" surface="surface" className="text-foreground">
       <Container className="grid grid-cols-1 items-center gap-12 min-[1200px]:grid-cols-2 min-[1200px]:gap-36">
+        <DecorHex side="right" className="-top-10" />
         {/* artwork */}
         <Image
           src={featureImage}
@@ -18,12 +19,7 @@ export default function SmartEnergyManagement() {
           className="z-9"
         />
         {/* text — left */}
-        <div className="relative min-[1200px]:static z-9 flex flex-col min-[1200px]:max-w-163.5">
-          {/* cream decorative hex bleeding from the top-left */}
-          <Hexagon
-            color="#F7F2E1"
-            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
-          />
+        <div className="z-9 flex flex-col min-[1200px]:max-w-163.5">
           <SectionTitle>Smart Tariff Control</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
