@@ -93,8 +93,8 @@ export function ActionBar({
       : "Draft";
   // Colour carries the meaning, so the states aren't all one grey word:
   //
-  //   in progress   muted    — typing and saving are the normal case, and
-  //                            colouring them would make writing look alarming
+  //   unsaved       danger   — work that only exists on screen
+  //   saving        success  — on its way, and about to be safe
   //   saved         success  — steady while idle, not a flash: it stays until
   //                            the next keystroke
   //   not live yet  warning  — the one state with something still to do
@@ -106,7 +106,12 @@ export function ActionBar({
       : autosave?.status === "dirty"
         ? { text: "Unsaved changes", tone: "text-danger" }
         : autosave?.status === "saved"
-          ? autosave.staged
+          ? // Read from `staged`, the same value that shows the Discard
+            // button. It used to come off the autosave result, which is a
+            // snapshot taken when that save landed — so pressing Update
+            // cleared the button but left this insisting the work was not
+            // live.
+            staged
             ? { text: "Saved - not live yet", tone: "text-warning font-medium" }
             : { text: "Saved", tone: "text-success font-medium" }
           : null;
