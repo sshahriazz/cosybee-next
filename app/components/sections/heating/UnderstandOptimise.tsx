@@ -16,10 +16,10 @@ export default function UnderstandOptimise() {
         {/* cream decorative hex bleeding from the top-left */}
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -left-24 -top-13.5 w-[18rem] sm:-left-27 sm:w-88 lg:w-76.75"
+          className="pointer-events-none absolute -left-30 -top-13.5 w-[18rem] sm:-left-27 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
-        <div className="z-9 flex flex-col justify-center max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-160">
+        <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-160">
           <SectionTitle align="left">
             Understand and Optimise Your Home Energy Today
           </SectionTitle>
@@ -46,7 +46,7 @@ export default function UnderstandOptimise() {
         </div>
 
         {/* artwork — right */}
-        <div className="mx-auto w-full">
+        <div className="z-9 mx-auto w-full">
           <Image
             src={featureImage}
             alt="A smart radiator valve beside the app's heating tab — a Worcester Bosch combi at 95% efficiency, a £7,500 boiler upgrade grant"

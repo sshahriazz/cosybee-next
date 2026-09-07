@@ -1,5 +1,9 @@
 import Hexagon from "@/app/components/ui/Hexagon";
-import { FeatureItem, SectionTitle } from "@/app/components/ui/SectionContent";
+import {
+  FeatureItem,
+  SectionLead,
+  SectionTitle,
+} from "@/app/components/ui/SectionContent";
 import sideImg from "@/public/energy-management.png";
 import SharedImageHexCluster from "@/app/components/ui/SharedImageHexCluster";
 import { HIVE_3_PLACEMENTS, HIVE_3_VIEWBOX } from "@/app/lib/hex";
@@ -19,12 +23,17 @@ export default function SmartEnergyManagement() {
         />
 
         {/* text — left */}
-        <div className="z-9 flex flex-col min-[550px]:max-[1200px]:items-center min-[1200px]:max-w-163.5">
+        <div className="relative min-[1200px]:static z-9 flex flex-col  min-[1200px]:max-w-163.5">
+          {/* cream decorative hex bleeding from the top-right */}
+          <Hexagon
+            color="#F7F2E1"
+            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          />
           <SectionTitle>Smart Home Integration</SectionTitle>
-          <p className="mt-3 max-w-xl text-base min-[550px]:max-[1200px]:text-center leading-relaxed text-muted">
+          <SectionLead>
             Bring your solar system, battery and connected devices together in
             one intelligent platform.
-          </p>
+          </SectionLead>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="device"
@@ -44,11 +53,6 @@ export default function SmartEnergyManagement() {
             />
           </div>
         </div>
-        {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -right-24 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
-        />
       </Container>
     </Section>
   );

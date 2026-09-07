@@ -22,10 +22,10 @@ export default function WhyEnergieBee() {
         {/* cream decorative hex bleeding from the top-right */}
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -left-24 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
+          className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
-        <div className="z-9 flex flex-col justify-center max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-163">
+        <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-163">
           <SectionTitle align="left">Works With Your Smart Home</SectionTitle>
           <SectionLead>
             Part of the EnergieBee app - everything you need to monitor and
@@ -36,16 +36,19 @@ export default function WhyEnergieBee() {
               glyph="insights"
               title="Maximise Production"
               description="Track real-time solar generation and get insights to optimise energy production."
+              descWidth="max-w-[70%] sm:max-w-auto"
             />
             <FeatureCard
               glyph="savings"
               title="Track Savings"
               description="See exactly how much money you're saving with detailed analytics and historical comparisons."
+              descWidth="max-w-[70%] sm:max-w-auto"
             />
             <FeatureCard
               glyph="chart"
               title="Smart Analytics"
               description="Get detailed insights on production patterns, grid independence, and environmental impact."
+              descWidth="max-w-[70%] sm:max-w-auto"
             />
           </div>
         </div>

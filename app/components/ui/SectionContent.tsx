@@ -179,11 +179,7 @@ export function SectionHeader({
       <Heading variant="title" className="text-foreground">
         {title}
       </Heading>
-      {description && (
-        <p className="mx-auto mt-4 text-base text-muted sm:text-[20px] font-medium leading-8">
-          {description}
-        </p>
-      )}
+      {description && <SectionLead>{description}</SectionLead>}
     </div>
   );
 }
@@ -285,7 +281,7 @@ export function SectionLead({
     <Text
       variant="lead"
       tone="muted"
-      className={`mt-4 w-full max-w-xl ${className}`}
+      className={`mt-4 max-w-lg text-[20px] leading-8 text-muted  font-medium ${className}`}
     >
       {children}
     </Text>

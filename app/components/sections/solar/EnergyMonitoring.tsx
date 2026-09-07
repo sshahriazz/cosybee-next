@@ -55,15 +55,15 @@ export default function EnergyMonitoring({
           alt="Rooftop solar panels beside the EnergieBee app, showing today's solar cycle and a live 170 W flow into the house"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
-          className="object-cover object-right"
-        />
-        {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -right-24 -top-13.5 w-[18rem] sm:-right-27 sm:w-88 lg:w-76.75"
+          className="z-9 object-cover object-right"
         />
         {/* text */}
-        <div className="z-9 flex flex-col min-[550px]:max-[1200px]:items-center min-[1200px]:max-w-165">
+        <div className="relative min-[1200px]:static z-9 flex flex-col min-[1200px]:max-w-165">
+          {/* cream decorative hex bleeding from the top-right */}
+          <Hexagon
+            color="#F7F2E1"
+            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-13.5 w-[18rem] sm:-right-27 sm:w-88 lg:w-76.75"
+          />
           <SectionTitle>{title}</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-8">
             {features.map((f) => (

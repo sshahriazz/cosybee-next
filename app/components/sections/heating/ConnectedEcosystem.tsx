@@ -44,14 +44,14 @@ export default function ConnectedEcosystem() {
         {/* cream decorative hex bleeding from the top-left */}
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -left-24 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
+          className="pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
-        <div className="min-[1200px]:max-w-163.5 flex flex-col min-[550px]:max-[1200px]:items-center z-9">
+        <div className="min-[1200px]:max-w-163.5 flex flex-col z-9">
           <SectionTitle>
             EnergieBee is evolving into a connected home energy ecosystem
           </SectionTitle>
-          <SectionLead className="max-w-160.5 min-[550px]:max-[1200px]:text-center">
+          <SectionLead className="max-w-160.5">
             Today we optimise and forecast energy. Tomorrow we actively connect
             and control it.
           </SectionLead>
@@ -80,6 +80,7 @@ export default function ConnectedEcosystem() {
           alt="An EnergieBee hub and a 21.5° hybrid heating control beside the app's live energy flow — 170 W solar, 350 W imported, 870 W to the house"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
+          className="z-9"
         />
       </Container>
     </Section>

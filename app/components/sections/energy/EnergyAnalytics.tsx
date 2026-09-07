@@ -15,10 +15,10 @@ export default function EnergyAnalytics() {
       >
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -left-24 -top-10 w-[18rem] sm:-left-56 sm:w-88 lg:w-76.75 z-0"
+          className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75 z-0"
         />
         {/* text — left */}
-        <div className="z-9 flex flex-col justify-center max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-136.5">
+        <div className="z-9 flex flex-col justify-center max-[1200px]:max-w-160 min-[1200px]:max-w-136.5">
           <SectionTitle align="left">
             Energy &amp; Savings Analytics
           </SectionTitle>
@@ -45,7 +45,7 @@ export default function EnergyAnalytics() {
         </div>
 
         {/* artwork — right */}
-        <div className="mx-auto w-full">
+        <div className="z-9 mx-auto w-full">
           <Image
             src={featureImage}
             alt="The app's solar tab: a £1.46 bill, £0.35 earned exporting 2.9 kWh, and a 41.8 g CO2 per kWh footprint — 43% cleaner than the grid"

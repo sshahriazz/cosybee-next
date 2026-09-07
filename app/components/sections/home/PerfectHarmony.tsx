@@ -2,7 +2,11 @@ import Image from "next/image";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 // import { CtaButton } from "@/app/components/ui/Cta";
-import { FeatureCard, SectionTitle } from "@/app/components/ui/SectionContent";
+import {
+  FeatureCard,
+  SectionLead,
+  SectionTitle,
+} from "@/app/components/ui/SectionContent";
 import featureImage from "@/public/homepage-images/everything-connected-in-one-place.png";
 import Hexagon from "@/app/components/ui/Hexagon";
 
@@ -20,17 +24,17 @@ export default function PerfectHarmony() {
         {/* cream decorative hex bleeding from the top-left */}
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
+          className="pointer-events-none absolute -top-10 w-[18rem] sm:-left-36 -left-26 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
         <div className="min-[1200px]:max-w-170.5 flex flex-col min-[550px]:max-[1200px]:items-start z-9">
           <SectionTitle className="whitespace-pre-line">
             {"Everything connected \n in one place"}
           </SectionTitle>
-          <p className="mt-4 max-w-lg text-[20px] leading-8 text-muted min-[550px]:max-[1200px]:text-center font-medium">
+          <SectionLead>
             A single app to see how your home performs in real conditions and
             understand your energy balance.
-          </p>
+          </SectionLead>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
               glyph="house"
@@ -63,6 +67,7 @@ export default function PerfectHarmony() {
           alt="An EnergieBee hub on the wall and the app's live energy flow — 170 W of solar, 350 W imported, 870 W reaching the house"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
+          className="z-9"
           priority
         />
       </Container>

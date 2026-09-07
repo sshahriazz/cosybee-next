@@ -27,19 +27,16 @@ export default function WhyChoose() {
           quality={100}
           className="z-9"
         />
-        {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -right-24 -top-13.5 w-[18rem] sm:-right-27 sm:w-88 lg:w-76.75"
-        />
         {/* text */}
-        {/* Tablet (550–1200px) keeps the column capped at the desktop width and
-            centred on the page, but its content stays left-aligned — a centred
-            bullet list and centred feature rows read as ragged here. */}
-        <div className="z-9 flex flex-col text-left min-[550px]:max-w-163.5 min-[550px]:max-[1200px]:mx-auto">
-          <SectionTitle className="min-[550px]:max-[1200px]:text-left!">
-            Why Choose EnergieBee?
-          </SectionTitle>
+        {/* Tablet (550–1200px) keeps the column capped at the desktop width,
+            left-aligned with the rest of the page. */}
+        <div className="relative min-[1200px]:static z-9 flex flex-col text-left min-[550px]:max-w-163.5">
+          {/* cream decorative hex bleeding from the top-right */}
+          <Hexagon
+            color="#F7F2E1"
+            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-13.5 w-[18rem] sm:-right-27 sm:w-88 lg:w-76.75"
+          />
+          <SectionTitle>Why Choose EnergieBee?</SectionTitle>
           <SectionLead className="max-w-163.5">
             Smarter energy. Lower cost. Smaller footprint.
           </SectionLead>

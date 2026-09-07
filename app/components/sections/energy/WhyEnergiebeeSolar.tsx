@@ -23,16 +23,17 @@ export default function WhyEnergieBeeSolar() {
           alt="A rooftop array and a Sunsynk inverter beside the app's live energy flow, with today running 96% on the grid at 12.6 kWh"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
-        />
-        {/* cream decorative hex bleeding from the top-left */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -right-24 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          className="z-9"
         />
         {/* text — left */}
-        <div className="min-[1200px]:max-w-163.5 flex flex-col min-[550px]:max-[1200px]:items-center z-9">
+        <div className="relative min-[1200px]:static min-[1200px]:max-w-163.5 flex flex-col z-9">
+          {/* cream decorative hex bleeding from the top-left */}
+          <Hexagon
+            color="#F7F2E1"
+            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          />
           <SectionTitle>Battery + Solar Ready</SectionTitle>
-          <SectionLead className="max-w-163.5 min-[550px]:max-[1200px]:text-center">
+          <SectionLead className="max-w-163.5">
             EnergieBee orchestrates your full energy stack — solar generation,
             battery storage, EV charging, and grid imports — to minimise cost at
             every hour.

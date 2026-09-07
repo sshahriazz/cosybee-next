@@ -15,15 +15,18 @@ export default function TurnEnergyData() {
           alt="The app's 30-day view at 15.4 kWh a day billed, beside a carbon card reading 41.8 g CO2 per kWh — 43% cleaner than the grid"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
-        />
-        {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -right-20 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          className="z-9"
         />
         {/* text — left */}
-        <div className="z-9 flex flex-col min-[550px]:max-[1200px]:items-center min-[1200px]:max-w-163.5">
-          <SectionTitle>Turn Energy Data Into Real Savings</SectionTitle>
+        <div className="relative min-[1200px]:static z-9 flex flex-col  min-[1200px]:max-w-163.5">
+          {/* cream decorative hex bleeding from the top-right */}
+          <Hexagon
+            color="#F7F2E1"
+            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          />
+          <SectionTitle align="left">
+            Turn Energy Data Into Real Savings
+          </SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem
               glyph="savings"

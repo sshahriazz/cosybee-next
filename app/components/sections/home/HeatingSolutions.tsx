@@ -18,7 +18,7 @@ export default function HeatingSolutions() {
         {/* cream decorative hex bleeding from the top-right */}
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -right-24 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          className="pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
         />
         {/* artwork — left. Ordered after the text below 1200px, where the
             single column reads title first. */}
@@ -27,10 +27,10 @@ export default function HeatingSolutions() {
           alt="A radiator valve and a 20°C room thermostat beside the app, working a 52 m² home's heating potential from C up to A"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
-          className="order-2 min-[1200px]:order-1"
+          className="z-9 order-2 min-[1200px]:order-1"
         />
         {/* text — right */}
-        <div className="order-1 min-[1200px]:order-2 min-[1200px]:max-w-183.5 md:max-w-153.5 flex flex-col max-[1200px]:mx-auto  z-9">
+        <div className="order-1 min-[1200px]:order-2 min-[1200px]:max-w-183.5 md:max-w-153.5 flex flex-col  z-9">
           <SectionTitle>Heating Solutions</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureCard
