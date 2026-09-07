@@ -15,14 +15,15 @@ export default function SmartEnergyManagement() {
           alt="An EnergieBee hub beside the app reading a 6.5 kWp array with a 10.6 kWh battery, rating solar potential D up to A"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
-        />
-        {/* cream decorative hex bleeding from the top-right */}
-        <Hexagon
-          color="#F7F2E1"
-          className="pointer-events-none absolute -right-24 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          className="z-9"
         />
         {/* text — right */}
-        <div className="z-9 flex flex-col min-[550px]:max-[1200px]:items-center min-[1200px]:max-w-163.5">
+        <div className="relative min-[1200px]:static z-9 flex flex-col  min-[1200px]:max-w-163.5">
+          {/* cream decorative hex bleeding from the top-right */}
+          <Hexagon
+            color="#F7F2E1"
+            className="-z-10 pointer-events-none absolute -left-30 sm:left-auto -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          />
           <SectionTitle>Smart Energy Management</SectionTitle>
           <div className="mt-6 md:mt-8 space-y-4">
             <FeatureItem

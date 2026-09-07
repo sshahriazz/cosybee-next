@@ -16,7 +16,7 @@ export default function SmarterUnderstanding() {
         {/* cream decorative hex bleeding from the top-left */}
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -left-24 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
+          className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-left-36 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
         <div className="z-9 flex flex-col justify-center max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-145">
@@ -43,7 +43,7 @@ export default function SmarterUnderstanding() {
         </div>
 
         {/* artwork — right */}
-        <div className="mx-auto w-full">
+        <div className="z-9 mx-auto w-full">
           <Image
             src={featureImage}
             alt="An EnergieBee room display beside the app, splitting a billed 14.96 kWh grid import 80% to the house and 20% to the battery"

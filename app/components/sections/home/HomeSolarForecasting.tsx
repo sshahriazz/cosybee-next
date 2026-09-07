@@ -18,10 +18,10 @@ export default function HomeSolarForecasting() {
         {/* cream decorative hex bleeding from the top-right */}
         <Hexagon
           color="#F7F2E1"
-          className="pointer-events-none absolute -left-24 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
+          className="pointer-events-none absolute -left-30 -top-10 w-[18rem] sm:-right-36 sm:w-88 lg:w-76.75"
         />
         {/* text — left */}
-        <div className="z-9 flex flex-col max-[1200px]:mx-auto max-[1200px]:max-w-160 min-[1200px]:max-w-163.5">
+        <div className="z-9 flex flex-col max-[1200px]:max-w-160 min-[1200px]:max-w-163.5">
           <SectionTitle align="left">Solar Forecasting</SectionTitle>
           {/* <p className="mt-3 max-w-xl text-base leading-relaxed max-[1200px]:text-center text-[#545454]">
             A complete view of solar production, weather, and usage across the
@@ -51,6 +51,7 @@ export default function HomeSolarForecasting() {
           alt="A rooftop array beside the app's solar cycle — sunrise 06:42, a 3.0 kW peak at 13:00, sunset 20:18 — and an Aug 26 bill of £4.82"
           sizes="(min-width: 1440px) 1440px, 100vw"
           quality={100}
+          className="z-9"
         />
       </Container>
     </Section>
