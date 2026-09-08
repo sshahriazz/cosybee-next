@@ -35,7 +35,7 @@ Leave both unset for an open deployment. Production leaves them unset, and
 | File | Role |
 | --- | --- |
 | `app/lib/sandbox-gate.ts` | Config, HMAC signing, cookie shape, `isGateEnabled()`. Pure and importable from both the proxy and the server action. |
-| `proxy.ts` | Layer 1 of the proxy: checks every request, redirects locked ones to `/preview`, and handles the `?key=` link. |
+| `proxy.ts` | Layer 1 of the proxy: checks every request, redirects locked ones to `/preview`, and handles the `?eb_preview=` link. |
 | `app/preview/` | The unlock screen (`page.tsx`), the form (`UnlockForm.tsx`) and the Server Action that checks the code (`actions.ts`). |
 
 ## Getting in
@@ -45,11 +45,18 @@ Two ways, both landing on the same signed cookie:
 1. **The screen.** Any locked URL bounces to `/preview?from=<where you were
    going>`. Enter the code and you're returned to that page, not to the home
    page.
-2. **A link.** Append `?key=<the code>` to any URL:
-   `https://sandbox.example.com/hive?key=hunter2`. The proxy swaps the key for
+2. **A link.** Append `?eb_preview=<the code>` to any URL:
+   `https://sandbox.example.com/hive?eb_preview=hunter2`. The proxy swaps it for
    the cookie and redirects to the clean URL, so the code doesn't stay in the
    address bar or leak through the `Referer` header of the next request. Handy
    for "here's the build" messages.
+
+   The parameter is namespaced rather than a plain `key` on purpose: the proxy
+   deletes it from **every** request it sees, unlocked ones included, so a
+   generic name would silently eat somebody else's. `key` in particular is
+   already the S3 object in `/api/storage/download?key=…` and the address handle
+   in `/onboarding/building-profile?key=…`. Anything new the gate reads off the
+   query string needs the same treatment.
 
 The pass lasts **30 days**, then the screen reappears.
 

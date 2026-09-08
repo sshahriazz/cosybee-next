@@ -88,10 +88,14 @@ async function sandboxGate(
     request.nextUrl.protocol,
   );
 
-  // Shareable unlock link: <any url>?key=<access code>. Whatever the outcome we
-  // redirect to the same URL with the key stripped, so a wrong code can't be
-  // told apart from a right one by the response, and a correct one doesn't stay
-  // in the address bar to be screenshotted or leaked via Referer.
+  // Shareable unlock link: <any url>?eb_preview=<access code>. Whatever the
+  // outcome we redirect to the same URL with the parameter stripped, so a wrong
+  // code can't be told apart from a right one by the response, and a correct one
+  // doesn't stay in the address bar to be screenshotted or leaked via Referer.
+  //
+  // This strips on EVERY request, unlocked ones included, which is exactly why
+  // the parameter carries our own namespace — see GATE_KEY_PARAM. Never widen
+  // this to a name another route might already be using.
   if (searchParams.has(GATE_KEY_PARAM)) {
     const clean = new URL(request.url);
     clean.searchParams.delete(GATE_KEY_PARAM);
