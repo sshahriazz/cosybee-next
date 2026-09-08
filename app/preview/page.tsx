@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Card } from "@heroui/react";
-import { AppImage as Image } from "@/app/components/ui/AppImage";
-import EnergieBeeLogo from "@/public/energiebee-black-logo.svg";
-import EnergieBeeLogoOnDark from "@/public/energiebee-white-logo.svg";
+import { BrandLockup } from "@/app/components/ui/BrandLockup";
 import { safeRedirect } from "@/app/lib/safe-redirect";
 import { PRODUCTION_URL } from "@/app/lib/site";
 import {
@@ -53,33 +51,9 @@ export default async function PreviewPage({
 
   return (
     <main className="flex min-h-[70vh] flex-col items-center justify-center bg-background px-4 py-12">
-      {/* The same lockup the admin console wears (AdminHeader.tsx): mark plus
-       *  wordmark. Two files rather than one because the mark is a single flat
-       *  colour — the black one vanishes against the dark theme's background,
-       *  so the white one takes over, the `dark:hidden` swap used in Cta.tsx.
-       *  Both are SVGs, which Next serves straight from /_next/static/media
-       *  instead of proxying through /_next/image — the one thing that matters
-       *  here, since the gate leaves the former open and blocks the latter. */}
-      <div className="mb-8 flex items-center gap-2.5">
-        <Image
-          src={EnergieBeeLogo}
-          alt="EnergieBee"
-          className="h-11 w-auto dark:hidden"
-          quality={85}
-          loading="eager"
-        />
-        <Image
-          src={EnergieBeeLogoOnDark}
-          alt=""
-          aria-hidden
-          className="hidden h-11 w-auto dark:block"
-          quality={85}
-          loading="eager"
-        />
-        <span className="text-lg leading-[100%] font-bold text-foreground sm:text-xl">
-          energie<span className="font-medium">bee</span>
-        </span>
-      </div>
+      {/* Deliberately not a link: every route behind the gate is locked, so
+       *  linking home would only bounce the visitor back to this screen. */}
+      <BrandLockup className="mb-8" />
       <Card className="w-full max-w-md">
         <Card.Header>
           <Card.Title>Private preview</Card.Title>
