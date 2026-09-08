@@ -3,8 +3,9 @@
 import { AppImage as Image } from "@/app/components/ui/AppImage";
 import { AppLink as Link } from "@/app/components/ui/AppLink";
 import {
-  type Article,
-  type Tag,
+  type ArticleSummary,
+  type AuthorRef,
+  type TagRef,
   formatDate,
   formatReadTime,
 } from "@/app/lib/article-types";
@@ -39,13 +40,13 @@ function ArticleMeta({ readTime, date }: { readTime: number; date: string }) {
  * — on the chips themselves, not the row, so the gaps between them still
  * belong to the card link.
  */
-function TagList({ tags, basePath }: { tags: Tag[]; basePath: string }) {
+function TagList({ tags, basePath }: { tags: TagRef[]; basePath: string }) {
   if (tags.length === 0) return null;
   return (
     <div className="mt-4 flex flex-wrap gap-1.5">
       {tags.slice(0, 3).map((t) => (
         <Link
-          key={t.id}
+          key={t.slug}
           href={`${basePath}/tag/${t.slug}`}
           className="relative z-10 rounded-md bg-background px-2 py-0.5 text-xs font-medium text-muted transition-colors hover:bg-[#E6EEF1] hover:text-[#1b4a5e]"
         >
@@ -62,7 +63,7 @@ function TagList({ tags, basePath }: { tags: Tag[]; basePath: string }) {
  * duplicate route to the same page. Falls back to plain text when the author
  * has no slug.
  */
-function AuthorByline({ author }: { author: Article["author"] }) {
+function AuthorByline({ author }: { author: AuthorRef }) {
   const name = author?.name ?? "energiebee";
   const avatar = (
     <Avatar name={name} avatarUrl={author?.avatarUrl} className="h-10 w-10" />
@@ -96,7 +97,13 @@ function AuthorByline({ author }: { author: Article["author"] }) {
  * Public-blog article card — cover image with category badge, then meta,
  * title, excerpt, tags, and an author byline. Linked to the article page.
  */
-export function ArticleCard({ a, basePath }: { a: Article; basePath: string }) {
+export function ArticleCard({
+  a,
+  basePath,
+}: {
+  a: ArticleSummary;
+  basePath: string;
+}) {
   // Warm up the host the BROWSER will fetch this cover from. Optimizable
   // covers are served by our own origin via /_next/image (the optimizer does
   // the cross-origin fetch server-side), so they need no hint at all — only a

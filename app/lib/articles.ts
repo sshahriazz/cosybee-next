@@ -1,10 +1,13 @@
 import "server-only";
+import { cache } from "react";
 import { api, type ApiPost, type Blog } from "./api";
 import {
   resolveCoverImage,
+  toArticleSummary,
   tagSlug,
   validImageOrNull,
   type Article,
+  type ArticleSummary,
   type Author,
   type Category,
   type CategorySummary,
@@ -16,6 +19,7 @@ import { FALLBACK_PHRASES, type Phrase } from "./phrase-of-the-week";
 
 export type {
   Article,
+  ArticleSummary,
   Author,
   Category,
   CategorySummary,
@@ -301,8 +305,18 @@ const MAX_PAGES = 100; // hard safety cap: 5,000 posts
  * the tolerant `getPosts`, whose empty fallback carries `totalPages: 0` — so a
  * failure on page 3 of 8 ended the loop and returned pages 1-2 as if that were
  * the whole catalogue, with nothing logged.
+ *
+ * Wrapped in React `cache()` so the walk runs ONCE per request. The blog hubs
+ * ask for the catalogue three times over — `generateMetadata` needs the
+ * categories, and the page body needs both the articles and the categories,
+ * each of which lands here. `fetch` already de-duplicates the network calls,
+ * but nothing de-duplicated the loop around them or the `toArticle` mapping
+ * downstream, so the whole catalogue was parsed and mapped three times per
+ * render. It matters more than the count suggests: the walk is SEQUENTIAL by
+ * necessity (page N+1's existence is only known once page N answers), so past
+ * the 50-post page size each repeat costs another serial round trip.
  */
-async function getAllPublishedPosts(blog: Blog): Promise<ApiPost[]> {
+const getAllPublishedPosts = cache(async (blog: Blog): Promise<ApiPost[]> => {
   const out: ApiPost[] = [];
   let page = 1;
   let totalPages = 1;
@@ -319,7 +333,7 @@ async function getAllPublishedPosts(blog: Blog): Promise<ApiPost[]> {
     );
   }
   return out;
-}
+});
 
 /** Fields every dated record shares — enough to pick a real `lastModified`. */
 type Dated = {
@@ -360,9 +374,33 @@ export async function getPublishedCount(blog: Blog): Promise<number> {
 }
 
 /** Every published article for a blog (all pages) — for tag pages & search. */
-export async function getAllArticles(blog: Blog): Promise<Article[]> {
+export const getAllArticles = cache(async (blog: Blog): Promise<Article[]> => {
   const posts = await getAllPublishedPosts(blog);
   return posts.map(toArticle);
+});
+
+/**
+ * Every published article for a blog, narrowed to what a listing renders.
+ *
+ * The blog hubs' read. They pass their whole catalogue into `BlogBrowse`, a
+ * CLIENT component, so every field survives into the RSC payload and crosses
+ * the wire — see `ArticleSummary` for what that was costing. Prefer this over
+ * `getAllArticles` anywhere the result is handed to a client component; reach
+ * for the full article only where the detail view's own fields are needed.
+ */
+export async function getArticleSummaries(
+  blog: Blog,
+): Promise<ArticleSummary[]> {
+  const articles = await getAllArticles(blog);
+  return articles.map(toArticleSummary);
+}
+
+/** `getFeatured`, narrowed for the carousel — see `getArticleSummaries`. */
+export async function getFeaturedSummaries(
+  blog: Blog,
+): Promise<ArticleSummary[]> {
+  const featured = await getFeatured(blog);
+  return featured.map(toArticleSummary);
 }
 
 /**
@@ -650,9 +688,9 @@ export function isIndexableCategory(articleCount: number): boolean {
  * a sitemap entry pointing at an empty category is a 404 we advertised
  * ourselves. Every URL this produces has at least one article behind it.
  */
-export async function getCategorySummaries(
+export const getCategorySummaries = cache(async (
   blog: Blog,
-): Promise<CategorySummary[]> {
+): Promise<CategorySummary[]> => {
   const articles = await getAllArticles(blog);
   const bySlug = new Map<string, CategorySummary>();
   for (const a of articles) {
@@ -674,7 +712,7 @@ export async function getCategorySummaries(
     if (modified > existing.lastModified) existing.lastModified = modified;
   }
   return [...bySlug.values()];
-}
+});
 
 /**
  * Resolve a `/[blog]/category/[slug]` URL to its label and articles, or null

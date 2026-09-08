@@ -8,7 +8,7 @@ import { AppLink as Link } from "@/app/components/ui/AppLink";
 import { CtaButton } from "@/app/components/ui/Cta";
 import { Section } from "@/app/components/ui/Section";
 import {
-  type Article,
+  type ArticleSummary,
   formatDate,
   formatReadTime,
 } from "@/app/lib/article-types";
@@ -48,7 +48,7 @@ function Slide({
   basePath,
   priority,
 }: {
-  slide: Article;
+  slide: ArticleSummary;
   basePath: string;
   priority: boolean;
 }) {
@@ -101,7 +101,7 @@ function Slide({
           <div className="mt-4 flex flex-wrap gap-2">
             {slide.tags.slice(0, 3).map((t) => (
               <Link
-                key={t.id}
+                key={t.slug}
                 href={`${basePath}/tag/${t.slug}`}
                 className="inline-flex items-center rounded-full bg-[#F3F3F3] px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:bg-[#E6EEF1] hover:text-[#1b4a5e]"
               >
@@ -170,7 +170,7 @@ export default function BlogFeatured({
   slides,
   basePath,
 }: {
-  slides: Article[];
+  slides: ArticleSummary[];
   basePath: string;
 }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  type Article,
+  type ArticleSummary,
   type CategorySummary,
 } from "@/app/lib/article-types";
 import Divider from "@/app/components/ui/Divider";
@@ -11,8 +11,8 @@ import BlogFilterBar from "./BlogFilterBar";
 import BlogLatestArticles from "./BlogLatestArticles";
 
 type Props = {
-  articles: Article[];
-  featured: Article[];
+  articles: ArticleSummary[];
+  featured: ArticleSummary[];
   categories: readonly CategorySummary[];
   /** Link base for article cards/links, e.g. "/hive" or "/learn". */
   basePath: string;
