@@ -18,8 +18,9 @@ The prefix is for `grep`, the JSON is for `jq` — one line so both work.
 | `instrumentation.ts` | Next's server bootstrap hook; calls the installer once per server process. |
 
 `proxy.ts` is deliberately untouched. It runs *before* the route renders, so it
-can never see the status code or the response time, and using it would have
-meant widening the auth matcher from six paths to the whole site. The app is
+can never see the status code or the response time — which is the whole reason,
+and it still holds now that the proxy's matcher covers the entire site for the
+sandbox gate (see `sandbox-access.md`). The app is
 deployed as a self-hosted `output: "standalone"` Node server (see the
 Dockerfile), so hooking the HTTP server is available to us and sees the whole
 request. **If this app is ever moved to Vercel or another serverless platform,
