@@ -127,9 +127,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  reactCompiler: {
-    compilationMode: "all",
-  },
+  // Default ("infer") mode ONLY — do NOT set `compilationMode: "all"`.
+  //
+  // "all" compiles every function in a file, not just the ones the compiler
+  // infers to be components or hooks. Plain event callbacks then get a `_c()`
+  // (react-compiler-runtime `c` → `useMemoCache`) prologue injected. That is a
+  // hook, so the moment such a callback runs from an event handler instead of
+  // from render, the dispatcher is null and React throws "Invalid hook call"
+  // (minified error #321). It took out the onboarding address picker: the
+  // ComboBox `onSelectionChange` handler threw before it could navigate, so
+  // step 1 could never reach step 2.
+  reactCompiler: true,
   // NOTE: there is deliberately NO `env: {}` block here.
   //
   // Next's `env` config inlines each key as a build-time literal (like
