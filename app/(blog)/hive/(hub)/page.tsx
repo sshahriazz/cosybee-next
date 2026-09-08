@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import BlogHero from "@/app/components/sections/blog/BlogHero";
 import BlogBrowse from "@/app/components/sections/blog/BlogBrowse";
 import {
-  getAllArticles,
-  getFeatured,
+  getArticleSummaries,
+  getFeaturedSummaries,
   getCategorySummaries,
 } from "@/app/lib/articles";
 import { browsePageCount } from "@/app/lib/article-types";
@@ -59,9 +59,12 @@ export default async function HivePage({ searchParams }: PageProps<"/hive">) {
   const sp = await searchParams;
   const page = parsePage(sp.page);
 
+  // Narrowed to the listing shape: all three land in `BlogBrowse`, a client
+  // component, so anything kept here is serialised into the RSC payload and
+  // shipped to the browser. See `ArticleSummary`.
   const [articles, featured, categories] = await Promise.all([
-    getAllArticles("hive"),
-    getFeatured("hive"),
+    getArticleSummaries("hive"),
+    getFeaturedSummaries("hive"),
     getCategorySummaries("hive"),
   ]);
 
@@ -70,7 +73,16 @@ export default async function HivePage({ searchParams }: PageProps<"/hive">) {
     firstParam(sp.q) || categorySlug || firstParam(sp.tag),
   );
   const totalPages = browsePageCount(articles.length);
-  // Out-of-range browse page → 404 rather than a thin, empty soft-404.
+  // Out-of-range browse page → the not-found page rather than a thin, empty
+  // one. NOTE: this streams as HTTP 200 + `noindex`, NOT a hard 404. The
+  // sibling loading.tsx opens the response before this check can run, and a
+  // status cannot be changed once headers are sent. That is survivable here
+  // and nowhere else in this segment: nothing links these URLs (the pagination
+  // stops at `totalPages` and the sitemap lists exactly that many), and the
+  // `noindex` keeps them out of the index — a crawler may still log a soft
+  // 404. The article/tag/category routes below keep their hard 404s, which is
+  // why the loading boundary is scoped to the (hub) group instead of sitting
+  // at the segment root where it would cover them too.
   if (!filtered && page > totalPages) notFound();
 
   return (

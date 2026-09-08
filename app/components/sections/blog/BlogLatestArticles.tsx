@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { type Article, ARTICLES_PER_PAGE } from "@/app/lib/article-types";
+import {
+  type ArticleSummary,
+  ARTICLES_PER_PAGE,
+} from "@/app/lib/article-types";
 import { Section } from "@/app/components/ui/Section";
 import Pagination from "@/app/components/ui/Pagination";
 import { Button } from "@heroui/react";
@@ -24,7 +27,7 @@ function deriveHeading(
 
 type Props = {
   /** The full article set; filtering/pagination happens here on the client. */
-  articles: Article[];
+  articles: ArticleSummary[];
   basePath: string;
   query?: string;
   /** Active category *slug*; "" means All. Matches `article.category.slug`. */

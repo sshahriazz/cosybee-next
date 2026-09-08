@@ -255,3 +255,77 @@ export function resolveCoverImage(
     validImageOrNull(coverImage) ?? validImageOrNull(ogImage) ?? PLACEHOLDER_COVER
   );
 }
+
+/**
+ * The narrowed taxonomy shapes a LISTING card actually renders.
+ *
+ * A card byline shows an author's name, avatar and profile link — never their
+ * bio, role or socials. A category badge needs a label plus the slug its chip
+ * filters by. A tag chip needs a label and the slug it links to. Everything
+ * else on the full `Author` / `Category` / `Tag` is detail-view or admin data.
+ */
+export type AuthorRef = Pick<Author, "name" | "slug" | "avatarUrl">;
+export type CategoryRef = Pick<Category, "name" | "slug">;
+export type TagRef = Pick<Tag, "name" | "slug">;
+
+/**
+ * An article as the listing UI consumes it — the hubs' card grid and featured
+ * carousel, and every other `ArticleCard` caller.
+ *
+ * The hubs hand their WHOLE catalogue to a client component (`BlogBrowse`, so
+ * search and category filtering happen with no round trip), which means every
+ * field of every article is serialised into the RSC payload and shipped to the
+ * browser. A full `Article` carries ~35 fields; a card reads twelve. The rest
+ * is detail-view and SEO data that no listing ever touches — `jsonLd` alone was
+ * 18% of the hub payload and the per-post repeat of the author `bio` another
+ * 17%, on a `/hive` navigation that moved 213KB against `/faq`'s 70KB.
+ *
+ * `Article` stays structurally assignable to this, so a caller already holding
+ * full articles can pass them straight through. The hubs go through
+ * `toArticleSummary` so the wire only carries what renders.
+ */
+export type ArticleSummary = Pick<
+  Article,
+  | "slug"
+  | "title"
+  | "description"
+  | "coverImage"
+  | "coverImageAlt"
+  | "readTime"
+  | "authorDate"
+  | "carouselIntro"
+  | "carouselBody"
+> & {
+  author: AuthorRef;
+  category: CategoryRef;
+  tags: TagRef[];
+};
+
+/**
+ * Narrow a full article to the fields the listing UI renders.
+ *
+ * Reads `author` / `category` / `tags` directly rather than defensively: this
+ * only ever receives `toArticle` output, whose `normalize*` helpers already
+ * guarantee an object for each (a post filed under nothing gets the
+ * `UNCATEGORISED_SLUG` placeholder, not a null).
+ */
+export function toArticleSummary(a: Article): ArticleSummary {
+  return {
+    slug: a.slug,
+    title: a.title,
+    description: a.description,
+    coverImage: a.coverImage,
+    coverImageAlt: a.coverImageAlt,
+    readTime: a.readTime,
+    authorDate: a.authorDate,
+    carouselIntro: a.carouselIntro,
+    carouselBody: a.carouselBody,
+    author: {
+      name: a.author.name,
+      slug: a.author.slug,
+      avatarUrl: a.author.avatarUrl,
+    },
+    category: { name: a.category.name, slug: a.category.slug },
+    tags: a.tags.map((t) => ({ name: t.name, slug: t.slug })),
+  };
+}
