@@ -51,13 +51,20 @@ export const GATE_COOKIE = "eb_preview";
 export const GATE_PATH = "/preview";
 
 /**
- * Query parameter that unlocks in one click: any URL + `?key=<password>`.
+ * Query parameter that unlocks in one click: any URL + `?eb_preview=<password>`.
  * Lets a link be pasted into a message ("here's the build") without walking
  * someone through a form. `proxy.ts` swaps it for the cookie and redirects to
  * the clean URL, so the code doesn't linger in the address bar — or in the
  * Referer header of the next request.
+ *
+ * Named after the cookie, and NOT the obvious `key`, because the proxy strips
+ * this parameter from every request it sees — including ones already past the
+ * gate. A generic name would quietly eat somebody else's: `key` alone is the
+ * S3 object in `/api/storage/download?key=…` (app/lib/storage.ts) and the AFD
+ * address handle in `/onboarding/building-profile?key=…`. Any new parameter
+ * this file reaches for has to be namespaced for the same reason.
  */
-export const GATE_KEY_PARAM = "key";
+export const GATE_KEY_PARAM = "eb_preview";
 
 /** How long a successful unlock lasts, in seconds (30 days). */
 export const GATE_MAX_AGE = 60 * 60 * 24 * 30;
