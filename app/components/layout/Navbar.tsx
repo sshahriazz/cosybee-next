@@ -146,7 +146,7 @@ export default function Navbar({
   // site with the same top bar as visitors, and switching them to the app
   // nav would hide the marketing pages they still need to reach (product,
   // learn, etc.). The `/admin` shell is separate and already renders its
-  // own header via `HideOnAdmin`, so this only affects admin browsing
+  // own header via `HideSiteChrome`, so this only affects admin browsing
   // OUTSIDE the admin console — where they act like a visitor.
   const isAdmin = !!data?.user?.role && data.user.role === "admin";
   const useAppNav = signedIn && !isAdmin;

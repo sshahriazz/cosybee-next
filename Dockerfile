@@ -98,6 +98,13 @@ ENV NODE_ENV=production \
 #   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY   S3 credentials (if used)
 #   RECAPTCHA_SECRET_KEY    server-side reCAPTCHA verification
 #   BING_SITE_VERIFICATION  optional webmaster token (dynamic pages)
+#   SANDBOX_ACCESS_PASSWORD shared access code that puts the WHOLE deployment
+#                           behind the /preview gate (app/lib/sandbox-gate.ts).
+#                           Set it on the sandbox; leave it unset on production,
+#                           where it is ignored anyway. Changing it signs
+#                           everyone out.
+#   SANDBOX_SESSION_SECRET  optional extra salt for the gate cookie; rotate it
+#                           alone to sign everyone out without changing the code
 
 # Run as an unprivileged user.
 RUN addgroup --system --gid 1001 nodejs \
@@ -113,8 +120,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 USER nextjs
 EXPOSE 3000
 
-# Liveness check against the static home page.
+# Liveness check against robots.txt: a prerendered route that answers 200 no
+# matter what. Not the home page — with SANDBOX_ACCESS_PASSWORD set, `/`
+# redirects to the /preview gate, and a probe that has to follow a redirect to
+# call the container healthy is a probe waiting to be tripped up. robots.txt is
+# one of the paths the gate deliberately leaves open (see proxy.ts).
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget --quiet --spider http://127.0.0.1:3000/ || exit 1
+  CMD wget --quiet --spider http://127.0.0.1:3000/robots.txt || exit 1
 
 CMD ["node", "server.js"]

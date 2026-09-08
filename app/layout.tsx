@@ -4,7 +4,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
-import { HideOnAdmin } from "./components/layout/HideOnAdmin";
+import { HideSiteChrome } from "./components/layout/HideSiteChrome";
 import { Providers } from "./providers";
 import Analytics from "./components/Analytics";
 import GoogleTagManager, {
@@ -299,17 +299,17 @@ export default function RootLayout({
           />
         )}
         <Providers>
-          <HideOnAdmin>
+          <HideSiteChrome>
             <Navbar />
-          </HideOnAdmin>
+          </HideSiteChrome>
           {/* Skip-link target. A wrapper (not <main>, since each page renders
            *  its own <main>) that keeps the sticky-footer flex layout intact. */}
           <div id="main-content" tabIndex={-1} className="flex flex-1 flex-col">
             {children}
           </div>
-          <HideOnAdmin>
+          <HideSiteChrome>
             <Footer />
-          </HideOnAdmin>
+          </HideSiteChrome>
           <DeferredClientLayer />
         </Providers>
         <Analytics />
