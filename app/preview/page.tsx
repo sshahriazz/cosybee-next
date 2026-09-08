@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Card } from "@heroui/react";
+import { BrandLockup } from "@/app/components/ui/BrandLockup";
 import { safeRedirect } from "@/app/lib/safe-redirect";
 import { PRODUCTION_URL } from "@/app/lib/site";
 import {
@@ -50,9 +51,9 @@ export default async function PreviewPage({
 
   return (
     <main className="flex min-h-[70vh] flex-col items-center justify-center bg-background px-4 py-12">
-      <span className="mb-8 text-2xl font-extrabold tracking-tight text-foreground">
-        Energie<span className="text-accent">Bee</span>
-      </span>
+      {/* Deliberately not a link: every route behind the gate is locked, so
+       *  linking home would only bounce the visitor back to this screen. */}
+      <BrandLockup className="mb-8" />
       <Card className="w-full max-w-md">
         <Card.Header>
           <Card.Title>Private preview</Card.Title>

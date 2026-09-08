@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AppLink as Link } from "@/app/components/ui/AppLink";
+import { BrandLockup } from "@/app/components/ui/BrandLockup";
 
 // Auth screens shouldn't be indexed.
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 /**
  * Shared shell for the public auth flow (login / register / forgot / reset).
  * Renders inside the root layout (so the site Navbar + Footer remain), and
- * simply centres the auth card with the brand wordmark above it.
+ * simply centres the auth card with the brand lockup above it.
  */
 export default function AuthLayout({
   children,
@@ -18,12 +18,7 @@ export default function AuthLayout({
 }) {
   return (
     <main className="flex min-h-[70vh] flex-col items-center justify-center bg-background px-4 py-12">
-      <Link
-        href="/"
-        className="mb-8 text-2xl font-extrabold tracking-tight text-foreground"
-      >
-        Energie<span className="text-accent">Bee</span>
-      </Link>
+      <BrandLockup href="/" className="mb-8" />
       {children}
     </main>
   );
