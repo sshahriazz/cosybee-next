@@ -45,7 +45,7 @@ export function BrandLockup({
       />
       <Image
         src={EnergieBeeLogoOnDark}
-        alt=""
+        alt="EnergieBee"
         aria-hidden
         className="hidden h-11 w-auto dark:block"
         quality={85}
