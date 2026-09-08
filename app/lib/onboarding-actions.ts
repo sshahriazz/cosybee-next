@@ -35,6 +35,17 @@ export interface ResolvedAddress {
   key: string;
   uprn: string;
   udprn: string;
+  /**
+   * Building name / number line, when AFD holds it separately from the
+   * street — "1 Gorple Cottages", "Flat 3", "The Old Vicarage". Empty for
+   * plain numbered addresses, where the number is part of `street`
+   * instead. Always render it ahead of `street`: dropping it collapses
+   * every home on a shared street to the same line.
+   */
+  property: string;
+  /** Business / care-of name on the address. Usually empty for homes. */
+  organisation: string;
+  /** May already include the house number for UK numbered addresses. */
   street: string;
   locality: string;
   town: string;

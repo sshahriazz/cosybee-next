@@ -39,7 +39,15 @@ export function resolveEpc(
       : { kind: "pick" };
   }
 
-  const match = bestMatchByStreet(certs, address.street);
+  // AFD keeps the building line separate from the street — "1 Gorple
+  // Cottages" lands in `property` while `street` is just "Wallhurst
+  // Close". The leading-house-number heuristic below needs whichever of
+  // the two actually carries the unit, so prefer `property` and fall
+  // back to `street` for plain numbered addresses ("1 Hope Street"),
+  // where AFD leaves `property` empty.
+  const unitLine =
+    address.property.trim().length > 0 ? address.property : address.street;
+  const match = bestMatchByStreet(certs, unitLine);
   return match
     ? { kind: "auto", certificateNumber: match.certificateNumber }
     : { kind: "pick" };
@@ -72,7 +80,8 @@ export function mostRecentCertificate(
  * starts with the same unit / house number the user typed. Mirrors mobile's
  * `_bestMatchCertificate`:
  *
- *   1. Extract the leading number from the street ("1 Hope Street" → "1",
+ *   1. Extract the leading number from the address line — AFD's building
+ *      line when it has one, else the street ("1 Hope Street" → "1",
  *      "Flat 12 Concert Square" → "12", "1a Hope Street" → "1a").
  *   2. Filter EPCs whose own address starts with that unit (also matching
  *      `flat N …` / `apartment N …` / `unit N …` prefixes).

@@ -185,8 +185,28 @@ export function BuildingProfileClient({ address, epcs }: Props) {
   );
 }
 
+/**
+ * Full postal line for the confirmation summary — and for the address we
+ * persist on the no-EPC create path.
+ *
+ * AFD splits the building off the street: "1 Gorple Cottages" arrives in
+ * `property` while `street` is just "Wallhurst Close". Starting the line
+ * at `street` therefore renders every home on the close identically, so
+ * the user can't tell whether we resolved the address they picked. Lead
+ * with `organisation` / `property` when AFD supplies them; for plain
+ * numbered addresses both are empty and the number is already inside
+ * `street`, so the output is unchanged.
+ */
 function displayAddress(addr: ResolvedAddress): string {
-  return [addr.street, addr.locality, addr.town, addr.county]
-    .filter((p) => p && p.length > 0)
+  return [
+    addr.organisation,
+    addr.property,
+    addr.street,
+    addr.locality,
+    addr.town,
+    addr.county,
+  ]
+    .map((part) => part?.trim() ?? "")
+    .filter((part) => part.length > 0)
     .join(", ");
 }
