@@ -21,25 +21,27 @@ export default function HeroDownloadCta({ qrSvg }: { qrSvg: string }) {
 
   if (platform === "desktop") {
     return (
-      <div className="flex items-stretch gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/20 backdrop-blur-sm">
+      <div className="flex flex-col items-stretch gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/20 backdrop-blur-sm">
         {/* QR — scan to open this page on a phone */}
         <div className="flex flex-col items-center gap-2">
           <div
             role="img"
             aria-label="QR code linking to the EnergieBee download page"
-            className="h-24 w-24 shrink-0 rounded-xl bg-white p-2 [&_svg]:h-full [&_svg]:w-full"
+            className="h-34 w-34 shrink-0 rounded-xl bg-white p-2 [&_svg]:h-full [&_svg]:w-full"
             dangerouslySetInnerHTML={{ __html: qrSvg }}
           />
-          <p className="text-xs font-medium text-white/70">Scan to download</p>
+          <p className="text-[13px] leading-[100%] font-medium text-white/70">
+            Scan to download
+          </p>
         </div>
 
-        <div aria-hidden className="w-px self-stretch bg-white/20" />
+        {/* <div aria-hidden className="w-px self-stretch bg-white/20" /> */}
 
         {/* both store badges, so desktop visitors can go straight to their
             store as well as scan */}
         <div className="flex flex-col justify-center gap-2.5">
           <AppStoreButton appId={APP_STORE_ID} />
-          <GooglePlayButton packageName={PLAY_STORE_PACKAGE_NAME} />
+          {/* <GooglePlayButton packageName={PLAY_STORE_PACKAGE_NAME} /> */}
         </div>
       </div>
     );
