@@ -155,6 +155,15 @@ Two guards, both deliberate:
 same GA4 page path as a visit to the article itself; `page_referrer` is
 `https://www.smartnews.com/`, which is what separates the two in reporting.
 
+**Exactly one `<script>` element.** SmartNews rejected the two-tag form — which
+is Google's own published snippet, an `async` loader tag followed by an inline
+one — so the loader is injected by `document.createElement` from inside the
+single inline script. The two are equivalent: `gtag()` only pushes onto
+`dataLayer`, and gtag.js drains whatever it finds there when it arrives. The
+standard snippet already relies on that, since an `async` loader normally
+resolves *after* the inline tag has run. Keep the queue-then-load order if you
+edit it, and keep it to one tag.
+
 To turn it off, unset `NEXT_PUBLIC_GA_MEASUREMENT_ID` or drop the `analyticsXml`
 call in `itemXml`.
 

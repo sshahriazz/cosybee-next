@@ -285,10 +285,17 @@ function analyticsXml(a: Article, link: string): string {
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   if (!IS_PRODUCTION_DEPLOYMENT || !gaId) return "";
 
+  // ONE <script> element. SmartNews rejected the two-tag form — Google's own
+  // published snippet, an async loader tag followed by an inline tag — so the
+  // loader is injected from inside the single inline script instead. The two
+  // are equivalent: `gtag()` only pushes onto `dataLayer`, and gtag.js drains
+  // whatever it finds there when it arrives. That is already how the standard
+  // snippet behaves, since an `async` loader normally resolves AFTER the inline
+  // tag has run. Queue first, then load, for the same reason.
+  //
   // JSON.stringify, not string concatenation: a headline containing an
   // apostrophe would otherwise terminate the JS string literal it sits in.
-  const script = `<script async src="https://www.googletagmanager.com/gtag/js?id=${gaId}"></script>
-<script>
+  const script = `<script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('consent', 'default', {ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted'});
@@ -299,6 +306,9 @@ gtag('config', ${JSON.stringify(gaId)}, {
   page_referrer: 'https://www.smartnews.com/',
   anonymize_ip: true
 });
+(function(){var s=document.createElement('script');s.async=true;s.src=${JSON.stringify(
+    `https://www.googletagmanager.com/gtag/js?id=${gaId}`,
+  )};(document.head||document.documentElement).appendChild(s);})();
 </script>`;
 
   return `      <snf:analytics>${cdata(script)}</snf:analytics>`;
