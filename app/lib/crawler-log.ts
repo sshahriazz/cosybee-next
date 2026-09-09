@@ -221,6 +221,7 @@ const ALWAYS_LOG = new Set([
   "/rss.xml",
   "/newsnow/newsnow.xml",
   "/news/applenews.xml",
+  "/smartnews/smartnews.xml",
   "/llms.txt",
   "/manifest.webmanifest",
 ]);

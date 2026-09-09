@@ -39,6 +39,54 @@ export type FeedDefinition = {
   title: string;
   /** `<channel><description>`. Defaults to the site description. */
   description?: string;
+  /**
+   * Emit `content:encoded` carrying the whole article body.
+   *
+   * Off by default, and deliberately so: `/rss.xml` is a "here is what's new,
+   * come and read it" feed, and shipping the full text turns every reader into
+   * a place the article can be consumed without visiting the site. Turn it on
+   * only for a partner that renders the article itself and has been given
+   * permission to — SmartNews (SmartView) is the case this exists for.
+   *
+   * Requires the caller to pass `bodies` to `buildRssFeed`; without it the
+   * element is simply omitted, because an EMPTY `content:encoded` reads to an
+   * ingester as "this article has no text" rather than as a missing field.
+   */
+  fullContent?: boolean;
+  /**
+   * Emit `media:thumbnail` (MRSS) with the article's cover image.
+   *
+   * The placeholder cover is never used here — see `thumbnailFor`. A stand-in
+   * bee illustration on every image-less article is worse than no thumbnail:
+   * the aggregator would show it as if it were the article's own picture.
+   */
+  thumbnails?: boolean;
+  /**
+   * Cap on how many items the feed carries, newest first.
+   *
+   * Only meaningful for a `fullContent` feed, where each item costs a detail
+   * read: without a cap the work grows with the archive forever, and an
+   * aggregator wants what is recent, not a complete back catalogue. The
+   * description-only feeds are cheap and stay uncapped.
+   */
+  maxItems?: number;
+  /**
+   * SmartNews SmartFormat channel branding. Presence of this object is what
+   * adds the `snf:` namespace to the document.
+   *
+   * `logoUrl` is shown above the article in SmartView, and the format is
+   * specified: a 700×100 PNG. `darkModeLogoUrl` is the optional counterpart for
+   * SmartNews' dark theme — the same lockup in white on transparency, since a
+   * near-black logo on dark chrome is invisible.
+   */
+  smartFormat?: {
+    /** Site-relative path to the 700×100 PNG. */
+    logoUrl: string;
+    /** Site-relative path to the white-on-transparent variant. */
+    darkModeLogoUrl?: string;
+    /** `<ttl>` — how many minutes a poller may cache the feed. */
+    ttlMinutes?: number;
+  };
 };
 
 /**
@@ -69,14 +117,91 @@ export const FEEDS = {
     path: "/news/applenews.xml",
     title: `${SITE_NAME} — News`,
   },
+  /**
+   * Polled by SmartNews. The one feed that carries whole articles: SmartNews
+   * renders them itself as SmartView pages rather than linking out, so a
+   * description-only item would publish as a stub.
+   *
+   * The logos are generated from `public/energieBee-logo.svg` at the 700×100
+   * the format specifies — regenerate both together if the brand mark changes,
+   * or they will disagree between light and dark.
+   */
+  smartnews: {
+    path: "/smartnews/smartnews.xml",
+    title: `${SITE_NAME} — News`,
+    fullContent: true,
+    thumbnails: true,
+    maxItems: 50,
+    smartFormat: {
+      logoUrl: "/smartnews-logo.png",
+      darkModeLogoUrl: "/smartnews-logo-dark.png",
+      // Matches the route's own cache window, so a poller that honours `ttl`
+      // and the CDN in front of it agree about how stale the feed may be.
+      ttlMinutes: 5,
+    },
+  },
 } as const satisfies Record<string, FeedDefinition>;
 
-function itemXml(a: Article): string {
+/**
+ * Wrap article HTML in a CDATA section for `content:encoded`.
+ *
+ * The body is real markup — it must reach the ingester as markup, not as
+ * escaped text, so CDATA rather than `escapeXml`. The one sequence CDATA cannot
+ * contain is its own terminator, so any `]]>` in the content is split across
+ * two sections: `]]` closes the first, `]]>` re-opens into the second, and a
+ * parser concatenates them back into the original three characters. Without
+ * this, a single `]]>` anywhere in an article ends the section early and dumps
+ * the rest of the body into the document as malformed XML.
+ */
+function cdata(html: string): string {
+  return `<![CDATA[${html.replace(/]]>/g, "]]]]><![CDATA[>")}]]>`;
+}
+
+/**
+ * The article's own cover, or null when it hasn't got one.
+ *
+ * `coverImageReal` and NOT `coverImage`: the latter falls back to the social
+ * image and then to a placeholder illustration, which is right for a card in a
+ * listing and wrong here. An aggregator presents `media:thumbnail` as the
+ * article's picture, so a shared stand-in would appear as though every
+ * image-less article were illustrated — and identically illustrated.
+ */
+function thumbnailFor(a: Article): string | null {
+  const cover = a.coverImageReal ?? a.ogImage;
+  if (!cover) return null;
+  return cover.startsWith("http") ? cover : url(cover);
+}
+
+function itemXml(
+  a: Article,
+  feed: FeedDefinition,
+  bodies?: ReadonlyMap<string, string>,
+): string {
   const link = url(`/${a.blog}/${a.slug}`);
   const desc = a.seoDescription ?? a.description ?? "";
   const categories = a.tags
     .map((t) => `<category>${escapeXml(t.name)}</category>`)
     .join("");
+
+  const extra: string[] = [];
+
+  if (feed.thumbnails) {
+    const thumb = thumbnailFor(a);
+    if (thumb) {
+      extra.push(`      <media:thumbnail url="${escapeXml(thumb)}" />`);
+    }
+  }
+
+  // Omitted rather than emitted empty when there is no body to carry — see
+  // `fullContent`. `bodies` is keyed by article id, which is stable where a
+  // slug is not (renaming a slug retires the old address; the id never moves).
+  if (feed.fullContent) {
+    const body = bodies?.get(a.id);
+    if (body) {
+      extra.push(`      <content:encoded>${cdata(body)}</content:encoded>`);
+    }
+  }
+
   return `    <item>
       <title>${escapeXml(a.seoTitle ?? a.title)}</title>
       <link>${escapeXml(link)}</link>
@@ -86,6 +211,7 @@ function itemXml(a: Article): string {
       ${a.category?.name ? `<category>${escapeXml(a.category.name)}</category>` : ""}
       ${categories}
       <description>${escapeXml(desc)}</description>
+${extra.join("\n")}
     </item>`;
 }
 
@@ -94,17 +220,56 @@ function itemXml(a: Article): string {
  *
  * `articles` are emitted in the order given — pass them newest-first
  * (`getFeedArticles` already does), which is what every aggregator expects.
+ *
+ * `bodies` maps article id → full article HTML, and is only read by a feed with
+ * `fullContent` set. Passed in rather than resolved here because rendering a
+ * body is async and costs a request per article: the caller decides how many
+ * articles are worth that, and this stays a pure function of its inputs.
  */
 export function buildRssFeed(
   articles: Article[],
   feed: FeedDefinition,
+  bodies?: ReadonlyMap<string, string>,
 ): string {
   const lastBuild = rfc822(articles[0]?.publishedAt ?? null);
 
+  // Declared only when used. An unused namespace is harmless to a parser but
+  // misleading to a human validating the feed against a partner's spec, and
+  // `snf:` in particular reads as a claim to be a SmartFormat document.
+  const namespaces = [
+    `xmlns:atom="http://www.w3.org/2005/Atom"`,
+    `xmlns:dc="http://purl.org/dc/elements/1.1/"`,
+    ...(feed.fullContent
+      ? [`xmlns:content="http://purl.org/rss/1.0/modules/content/"`]
+      : []),
+    ...(feed.thumbnails ? [`xmlns:media="http://search.yahoo.com/mrss/"`] : []),
+    ...(feed.smartFormat
+      ? [`xmlns:snf="http://www.smartnews.be/snf"`]
+      : []),
+  ].join("\n     ");
+
+  const snf = feed.smartFormat;
+  const channelExtra = [
+    // `pubDate` on the channel is the newest article, where `lastBuildDate` is
+    // when the document was generated. They are the same value here only
+    // because this feed is rebuilt from published posts and nothing else.
+    `    <pubDate>${lastBuild}</pubDate>`,
+    ...(snf?.ttlMinutes ? [`    <ttl>${snf.ttlMinutes}</ttl>`] : []),
+    ...(snf
+      ? [
+          `    <snf:logo>\n      <url>${escapeXml(url(snf.logoUrl))}</url>\n    </snf:logo>`,
+        ]
+      : []),
+    ...(snf?.darkModeLogoUrl
+      ? [
+          `    <snf:darkModeLogo>\n      <url>${escapeXml(url(snf.darkModeLogoUrl))}</url>\n    </snf:darkModeLogo>`,
+        ]
+      : []),
+  ].join("\n");
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
-     xmlns:atom="http://www.w3.org/2005/Atom"
-     xmlns:dc="http://purl.org/dc/elements/1.1/">
+     ${namespaces}>
   <channel>
     <title>${escapeXml(feed.title)}</title>
     <link>${escapeXml(SITE_URL)}</link>
@@ -114,7 +279,8 @@ export function buildRssFeed(
     <copyright>© ${ORG_LEGAL_NAME}</copyright>
     <managingEditor>${escapeXml(ORG_CONTACT_EMAIL)} (${escapeXml(ORG_LEGAL_NAME)})</managingEditor>
     <lastBuildDate>${lastBuild}</lastBuildDate>
-${articles.map(itemXml).join("\n")}
+${channelExtra}
+${articles.map((a) => itemXml(a, feed, bodies)).join("\n")}
   </channel>
 </rss>`;
 }

@@ -32,7 +32,8 @@ status and duration) — `detectCrawler()` is exported and ready for that.
 Logged: pages (including dynamic `/hive/[slug]` and `/learn/[slug]` articles),
 category and author pages, `/robots.txt`, `/sitemap.xml`, `/video-sitemap.xml`,
 `/news-sitemap.xml`, `/rss.xml`, `/newsnow/newsnow.xml`, `/news/applenews.xml`,
-`/llms.txt`, `/api/og/*` (how social cards get built), and 404s.
+`/smartnews/smartnews.xml`, `/llms.txt`, `/api/og/*` (how social cards get
+built), and 404s.
 
 Not logged: every request from a normal browser, `/_next/*`, `favicon.ico`, and
 static assets (js/css/images/fonts/video). Nothing is logged for humans, so this

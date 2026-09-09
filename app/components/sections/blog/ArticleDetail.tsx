@@ -11,8 +11,8 @@ import {
   unoptimizedFor,
 } from "@/app/lib/image-optimization";
 import { buildToc, wrapArticleTables } from "@/app/lib/toc";
-import { renderLegacyContent, isLegacyContent } from "@/app/lib/legacy-content";
-import { contentJsonToHtml, stripPastedColors } from "@/app/lib/blocknote";
+import { renderArticleBody } from "@/app/lib/article-body";
+import { stripPastedColors } from "@/app/lib/blocknote";
 import { collectFaqItems } from "@/app/lib/blocknoteSchema";
 import { ArticleCard } from "./ArticleCard";
 import { MoreArticlesCard } from "./MoreArticlesCard";
@@ -93,21 +93,11 @@ export default async function ArticleDetail({
   related,
   basePath,
 }: Props) {
-  // Resolve the article body. The document is authored in BlockNote, so the
-  // BlockNote server renderer is the source of truth: render `contentJson`
-  // with the shared schema (multi-column included) for perfect fidelity.
-  // Older posts may instead carry the legacy `{ sections }` shape, and we keep
-  // the backend-rendered `contentHtml` as a last-resort fallback.
-  let rawHtml: string;
-  if (isLegacyContent(article.contentJson)) {
-    rawHtml =
-      renderLegacyContent(article.contentJson) ?? article.contentHtml ?? "";
-  } else {
-    const blockNoteHtml = article.contentJson
-      ? await contentJsonToHtml(article.contentJson)
-      : "";
-    rawHtml = blockNoteHtml || article.contentHtml || "";
-  }
+  // Resolve the article body — BlockNote `contentJson` first, then the legacy
+  // shape, then the backend's stored HTML. Shared with the SmartNews feed's
+  // `content:encoded` (see lib/article-body.ts) so the syndicated copy cannot
+  // come from a different source than the page.
+  const rawHtml = await renderArticleBody(article);
   // Post-process the rendered body regardless of which source produced it:
   // heading ids for the TOC, a scroll wrapper around each table, and — for the
   // stored-`contentHtml` fallback, which may predate the export-side pass —
