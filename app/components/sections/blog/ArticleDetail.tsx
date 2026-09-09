@@ -27,7 +27,7 @@ import Breadcrumbs from "@/app/components/ui/Breadcrumbs";
 import { Container } from "@/app/components/ui/Container";
 import { Section } from "@/app/components/ui/Section";
 import {
-  blogPostingSchema,
+  articleSchema,
   breadcrumbSchema,
   faqPageSchema,
   videoObjectSchema,
@@ -175,13 +175,14 @@ export default async function ArticleDetail({
       {/* Warm up the connection to the media host — article images load from
           it cross-origin (React 19 hoists this to <head> and dedups it). */}
       <link rel="preconnect" href="https://eb-api.technext.it" />
-      {/* Prefer the backend-rendered Article schema when present — single
-          source of truth. Fall back to the locally-built schema only when
-          the backend didn't ship it (older API responses). Breadcrumb
-          schema is always our own concern. */}
+      {/* The backend-rendered Article schema merged over the locally-built one
+          — the backend owns the post's content, this side fills in the
+          site-level identity it has no way to know (publisher, url) and pins
+          the type. See `articleSchema`. Breadcrumb schema is always our own
+          concern. */}
       <JsonLd
         data={[
-          article.jsonLd ?? blogPostingSchema(article, path),
+          articleSchema(article, path),
           breadcrumbSchema(crumbs),
           // One VideoObject per embedded video — omitted entirely when the
           // article has none.
