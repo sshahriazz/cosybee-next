@@ -11,29 +11,10 @@
 import type { Article } from "./article-types";
 import { resolveArticleVideos, type ResolvedArticleVideo } from "./article-videos";
 import { SITE_URL } from "./site";
+import { escapeXml, w3cDate } from "./xml";
 
 /** Google's cap for a single sitemap file. Beyond this, split into an index. */
 export const MAX_SITEMAP_URLS = 50_000;
-
-/** Escape a string for inclusion in XML text content. */
-function escapeXml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
-
-/**
- * `video:publication_date` must be a W3C datetime. Article dates are already
- * ISO strings; anything unparseable is omitted rather than guessed — the field
- * is optional, and a wrong date is worse than an absent one.
- */
-function w3cDate(iso: string): string | null {
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? null : d.toISOString();
-}
 
 function videoXml(video: ResolvedArticleVideo): string {
   const lines = [
@@ -53,6 +34,8 @@ function videoXml(video: ResolvedArticleVideo): string {
       `      <video:player_loc>${escapeXml(video.embedUrl)}</video:player_loc>`,
     );
   }
+  // `video:publication_date` is OPTIONAL, so an unparseable date is simply left
+  // out rather than guessed — a wrong date is worse than an absent one.
   const published = w3cDate(video.uploadDate);
   if (published) {
     lines.push(`      <video:publication_date>${published}</video:publication_date>`);

@@ -23,16 +23,7 @@ import {
   SITE_URL,
   url,
 } from "./site";
-
-/** Escape a string for inclusion in XML text/attribute content. */
-export function escapeXml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
+import { escapeXml } from "./xml";
 
 /** Best-effort RFC-822 date (required by RSS) from an ISO string. */
 export function rfc822(iso: string | null): string {

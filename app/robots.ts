@@ -79,10 +79,17 @@ export default function robots(): MetadataRoute.Robots {
         disallow,
       },
     ],
-    // Both files are advertised: the video sitemap is a separate document
-    // because Google reads the `video:` namespace only from a sitemap that
-    // declares it, and Next's sitemap route has no vocabulary for it.
-    sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/video-sitemap.xml`],
+    // All three files are advertised. The video and news sitemaps are separate
+    // documents because Google reads the `video:` and `news:` namespaces only
+    // from a sitemap that declares them, and Next's sitemap route has no
+    // vocabulary for either. `/sitemap.xml` stays the complete URL list; the
+    // news file is just the last two days of articles (see lib/news-sitemap.ts),
+    // so it is additional discovery, never a replacement.
+    sitemap: [
+      `${SITE_URL}/sitemap.xml`,
+      `${SITE_URL}/video-sitemap.xml`,
+      `${SITE_URL}/news-sitemap.xml`,
+    ],
     // The Host directive expects a bare domain, not a full URL.
     host: SITE_URL.replace(/^https?:\/\//, ""),
   };

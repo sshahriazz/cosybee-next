@@ -217,6 +217,7 @@ const ALWAYS_LOG = new Set([
   "/robots.txt",
   "/sitemap.xml",
   "/video-sitemap.xml",
+  "/news-sitemap.xml",
   "/rss.xml",
   "/newsnow/newsnow.xml",
   "/news/applenews.xml",
