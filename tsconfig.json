@@ -6,6 +6,10 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    // Lets the node:test files import with an explicit ".ts" extension,
+    // which Node's type-stripping runtime requires for value imports.
+    // Permissive only — nothing else in the app uses the extension.
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
