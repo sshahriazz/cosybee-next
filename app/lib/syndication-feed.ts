@@ -13,11 +13,8 @@
  */
 
 import "server-only";
-import {
-  absolutizeHtml,
-  classifyEmbedIframes,
-  renderArticleBody,
-} from "./article-body";
+import { classifyEmbedIframes, renderArticleBody } from "./article-body";
+import { absolutizeHtml, stripTrackingParamsInHtml } from "./urls";
 import { getFeedArticlesWithContent } from "./articles";
 import { stripPastedColors } from "./blocknote";
 import type { Article } from "./article-types";
@@ -66,6 +63,11 @@ function syndicationBody(article: Article, rendered: string, feed: FeedDefinitio
   if (feed.newsBreak) {
     html = classifyEmbedIframes(html, NEWSBREAK_IFRAME_CLASSES);
   }
+  // Tracking parameters go before absolutising, so a root-relative URL is
+  // cleaned once here rather than again after it grows an origin. Both
+  // partners ask for clean canonical URLs; `stripTrackingParams` on the item
+  // link covers `<link>`/`<guid>`, and this covers the body.
+  html = stripTrackingParamsInHtml(html);
   // Last, so it also resolves anything the steps above introduced.
   return absolutizeHtml(html);
 }

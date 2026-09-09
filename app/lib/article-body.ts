@@ -10,8 +10,8 @@
  *
  * Only the SOURCE resolution is shared. What each consumer does afterwards is
  * legitimately different: the page adds heading ids, table scroll wrappers and
- * Next's image optimizer; a syndicated copy wants none of those (see
- * `absolutizeHtml`).
+ * Next's image optimizer; a syndicated copy wants none of those, and gets URL
+ * rewriting instead (see `lib/urls.ts`).
  */
 
 import type { Article } from "./article-types";
@@ -93,32 +93,4 @@ export function classifyEmbedIframes(
       ? tag.replace(existing[0], ` class="${existing[1]} ${name}"`)
       : tag.replace(/^<iframe\b/i, `<iframe class="${name}"`);
   });
-}
-
-/** Attributes whose value is a URL that a syndicated copy has to resolve. */
-const URL_ATTRIBUTES = ["src", "href", "poster"] as const;
-
-/**
- * Rewrite root-relative URLs in `html` to absolute ones.
- *
- * A syndicated body is rendered on someone else's origin, where `/hive/x` and
- * `/uploads/y.png` resolve against THEIR host — a broken link and a missing
- * image. Authored content is almost entirely absolute already (media lives on
- * S3), so this is a safety net rather than a hot path, but it is the difference
- * between a body that renders away from the site and one that half-renders.
- *
- * Only root-relative values (`/…`) are touched. Protocol-relative (`//host/…`),
- * absolute, `#fragment`, `mailto:` and `data:` URLs are all left exactly as
- * they are — the `(?!/)` is what keeps `//cdn.example/x` from being mangled
- * into the site's own origin.
- */
-export function absolutizeHtml(html: string): string {
-  return URL_ATTRIBUTES.reduce(
-    (acc, attr) =>
-      acc.replace(
-        new RegExp(`(\\s${attr}=")(/(?!/)[^"]*)(")`, "gi"),
-        (_m, before, path, after) => `${before}${SITE_URL}${path}${after}`,
-      ),
-    html,
-  );
 }

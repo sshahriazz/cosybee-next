@@ -9,8 +9,8 @@ than linking out.
 | `/rss.xml` | Description only | Every request |
 | `/newsnow/newsnow.xml` | Description only | Every request |
 | `/news/applenews.xml` | Description only | Every request |
-| `/smartnews/smartnews.xml` | **Full bodies** + SmartFormat branding | Every request, from 60s-cached reads |
-| `/newsbreak/newsbreak.xml` | **Full bodies** + MRSS | Every request, from 60s-cached reads |
+| `/smartnews/smartnews.xml` | **Full bodies** + SmartFormat branding, latest 20 | Every request, from 60s-cached reads |
+| `/newsbreak/newsbreak.xml` | **Full bodies** + MRSS, latest 50 | Every request, from 60s-cached reads |
 
 All five share one builder (`buildRssFeed`) and one article list, so they cannot
 disagree about what has been published. The two full-content feeds also share
@@ -27,7 +27,8 @@ the builder or the pipeline.
 | --- | --- |
 | `app/lib/rss-feed.ts` | `FEEDS`, `FeedDefinition`, and the RSS document builder |
 | `app/lib/syndication-feed.ts` | The full-content pipeline: read → render bodies → build |
-| `app/lib/article-body.ts` | `renderArticleBody`, `absolutizeHtml`, `classifyEmbedIframes` |
+| `app/lib/article-body.ts` | `renderArticleBody`, `classifyEmbedIframes` |
+| `app/lib/urls.ts` | `absolutizeHtml`, `stripTrackingParams`, `toAbsoluteUrl` — pure, no server imports |
 | `app/(blog)/smartnews/smartnews.xml/route.ts` | SmartNews route |
 | `app/(blog)/newsbreak/newsbreak.xml/route.ts` | NewsBreak route |
 
@@ -61,13 +62,33 @@ placeholder cover is deliberately not used: an aggregator presents the thumbnail
 as *the article's* picture, so a shared stand-in would make every image-less
 article look identically illustrated. One article currently has no cover.
 
-**Tracking parameters.** `<link>` and `<guid>` are clean canonical URLs —
-nothing in this codebase appends UTM parameters. Some article *bodies* contain
-`utm_` inside pasted third-party embed markup (Instagram, mostly); that is
-authored content and stripping it would break the embed.
+**Tracking parameters are stripped from every URL in the feed** — the item
+`<link>`/`<guid>` and every URL inside `content:encoded`. `utm_*` plus the
+`gclid` / `fbclid` / `msclkid` click identifiers; see `TRACKING_PARAMS` in
+`app/lib/urls.ts`. Deliberately NOT stripped: `ref_src` and `ref_url` (Twitter/X
+embeds need them to render) and `igshid` (Instagram's own permalinks) — a tidy
+URL is not worth a broken embed.
 
-**Capped at 50 items** (`maxItems`). Each item costs a detail read, because the
-list endpoint strips `contentJson`. The cap is applied *before* those reads, so
+The case that matters is HTML-encoded separators. A URL written in HTML joins
+its parameters with `&amp;`, so parsing the raw text sees one parameter named
+`amp;utm_campaign` — which hides everything after the first parameter from the
+filter and, worse, corrupts the URL on re-serialising. Instagram's embed
+permalinks are the live example. `stripTrackingParamsInHtml` decodes before
+parsing and re-encodes only when it actually changed something.
+
+**Links are canonical and absolute.** `canonicalLink` prefers the post's own
+`canonicalUrl` when set — that is the copy the author nominated as
+authoritative — and otherwise builds the article's address from its CURRENT
+slug, so nothing in a feed points at a redirect (renaming a slug retires the old
+address behind a 308). A `canonicalUrl` that is root-relative is resolved to
+absolute; one that is neither an absolute URL nor a `/` path is a typo and falls
+back to the article's own address rather than to a plausible-looking URL on our
+domain that leads nowhere. `<guid>` derives from the same value, which is what
+keeps guid generation identical across feeds.
+
+**Capped** (`maxItems`) — SmartNews at 20, NewsBreak at 50. Each item costs a
+detail read, because the list endpoint strips `contentJson`. The cap is applied
+*before* those reads, so
 the work doesn't grow with the archive. `DEFAULT_MAX_ITEMS` is the floor under a
 future feed that forgets to set one — there is no such thing as an uncapped
 full-content feed.
@@ -98,7 +119,38 @@ SmartNews renders each article as a **SmartView** page framed with our branding.
 **Channel:** `title`, `link`, `description`, `pubDate`, `language`, `snf:logo`,
 plus `snf:darkModeLogo` and `ttl`.
 **Items:** `title`, `link`, `guid`, `pubDate`, `dc:creator`, `description`,
-`content:encoded`, `media:thumbnail`.
+`content:encoded`, `media:thumbnail`, `snf:analytics`.
+
+**Capped at the latest 20**, at SmartNews' request — their crawler polls often
+and wants what is new. It also takes the document from ~920KB to ~700KB per
+poll.
+
+### snf:analytics
+
+SmartNews renders the article on their own surface, so nothing on this site ever
+sees the visit — this per-item script is the only way a SmartView read reaches
+GA4. SmartNews runs it in a sandboxed iframe.
+
+Two guards, both deliberate:
+
+- **Gated on `IS_PRODUCTION_DEPLOYMENT`**, exactly as `Analytics.tsx` is. The
+  sandbox deployment is built with the *production* analytics IDs (they arrive
+  as Dokploy build args), so without this the sandbox's feed would ship real
+  tracking to the real property. The element is absent locally and on sandbox —
+  that is correct, not a fault.
+- **Consent defaults are `denied`**, mirroring the site's own Consent Mode
+  posture. The Consently banner does not exist on SmartNews' surface, so there
+  is nothing there to grant consent: GA4 runs cookieless and sends only
+  privacy-preserving pings. Less granular data in exchange for not setting
+  analytics cookies on a UK audience with no consent basis — the same bargain
+  the site already makes.
+
+`page_location` is the canonical article URL, so a SmartView read lands on the
+same GA4 page path as a visit to the article itself; `page_referrer` is
+`https://www.smartnews.com/`, which is what separates the two in reporting.
+
+To turn it off, unset `NEXT_PUBLIC_GA_MEASUREMENT_ID` or drop the `analyticsXml`
+call in `itemXml`.
 
 ### The logos
 

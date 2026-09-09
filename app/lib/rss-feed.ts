@@ -15,7 +15,9 @@
  */
 
 import type { Article } from "./article-types";
+import { stripTrackingParams, toAbsoluteUrl } from "./urls";
 import {
+  IS_PRODUCTION_DEPLOYMENT,
   ORG_CONTACT_EMAIL,
   ORG_LEGAL_NAME,
   SITE_DESCRIPTION,
@@ -161,7 +163,10 @@ export const FEEDS = {
     title: `${SITE_NAME} — News`,
     fullContent: true,
     thumbnails: true,
-    maxItems: 50,
+    // SmartNews asked for the latest 20. Their crawler polls often and wants
+    // what is new, not an archive — and at 20 the feed is ~370KB rather than
+    // ~920KB, which is the difference this makes to every poll.
+    maxItems: 20,
     smartFormat: {
       logoUrl: "/smartnews-logo.png",
       darkModeLogoUrl: "/smartnews-logo-dark.png",
@@ -219,12 +224,84 @@ function thumbnailFor(a: Article): string | null {
   return cover.startsWith("http") ? cover : url(cover);
 }
 
+/**
+ * The URL an item points at — the article's CANONICAL address.
+ *
+ * `canonicalUrl` wins when the post declares one, because that is the copy the
+ * author has nominated as authoritative and an aggregator should send readers
+ * there rather than here. Otherwise the article's own address, which is already
+ * canonical and already final: renaming a slug retires the old address behind a
+ * 308 (see `resolveRetiredSlug`), and this is always built from the CURRENT
+ * slug, so nothing in a feed points at a redirect.
+ *
+ * Tracking parameters are stripped as a backstop. Nothing in this codebase adds
+ * them to an article URL, but `canonicalUrl` is a free-text admin field and a
+ * pasted link routinely arrives with a campaign tag still on the end.
+ *
+ * `<guid>` is derived from this same value, which is what keeps the guid
+ * generation logic identical across every feed — a requirement NewsBreak states
+ * explicitly, and a property SmartNews relies on to recognise a re-published
+ * article rather than treating it as new.
+ */
+function canonicalLink(a: Article): string {
+  const own = url(`/${a.blog}/${a.slug}`);
+  if (!a.canonicalUrl) return own;
+  return stripTrackingParams(toAbsoluteUrl(a.canonicalUrl, own));
+}
+
+/**
+ * `snf:analytics` — the tracking that runs on the SmartView page.
+ *
+ * SmartNews renders the article on their own surface, so nothing on our site
+ * ever sees the visit; this script is the only way a SmartView read appears in
+ * GA4 at all. SmartNews runs it inside a sandboxed iframe, one per item.
+ *
+ * Two guards, both deliberate:
+ *
+ *  - Gated on `IS_PRODUCTION_DEPLOYMENT`, exactly as `Analytics.tsx` is. The
+ *    sandbox deployment is built with the PRODUCTION analytics IDs (they arrive
+ *    as Dokploy build args), so without this the sandbox's feed would ship real
+ *    tracking to a real property.
+ *  - Consent defaults are DENIED, mirroring the site's own Consent Mode
+ *    posture. Our Consently banner does not exist on SmartNews' surface, so
+ *    there is nothing there to grant consent — GA4 therefore runs cookieless
+ *    and sends only privacy-preserving pings. That is a deliberate trade: less
+ *    granular data in exchange for not setting analytics cookies on a UK
+ *    audience with no consent basis, which is the same bargain the site makes.
+ *
+ * `page_location` is the canonical article URL rather than SmartNews', so the
+ * SmartView read lands on the same GA4 page path as a visit to the article
+ * itself; `page_referrer` is what separates the two in reporting.
+ */
+function analyticsXml(a: Article, link: string): string {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  if (!IS_PRODUCTION_DEPLOYMENT || !gaId) return "";
+
+  // JSON.stringify, not string concatenation: a headline containing an
+  // apostrophe would otherwise terminate the JS string literal it sits in.
+  const script = `<script async src="https://www.googletagmanager.com/gtag/js?id=${gaId}"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted'});
+gtag('js', new Date());
+gtag('config', ${JSON.stringify(gaId)}, {
+  page_location: ${JSON.stringify(link)},
+  page_title: ${JSON.stringify(a.seoTitle ?? a.title)},
+  page_referrer: 'https://www.smartnews.com/',
+  anonymize_ip: true
+});
+</script>`;
+
+  return `      <snf:analytics>${cdata(script)}</snf:analytics>`;
+}
+
 function itemXml(
   a: Article,
   feed: FeedDefinition,
   bodies?: ReadonlyMap<string, string>,
 ): string {
-  const link = url(`/${a.blog}/${a.slug}`);
+  const link = canonicalLink(a);
   const desc = a.seoDescription ?? a.description ?? "";
   const categories = a.tags
     .map((t) => `<category>${escapeXml(t.name)}</category>`)
@@ -247,6 +324,13 @@ function itemXml(
     if (body) {
       extra.push(`      <content:encoded>${cdata(body)}</content:encoded>`);
     }
+  }
+
+  // SmartNews recommends one per item. Empty string when it is not applicable
+  // (non-production, no GA id, or a feed that is not SmartFormat).
+  if (feed.smartFormat) {
+    const analytics = analyticsXml(a, link);
+    if (analytics) extra.push(analytics);
   }
 
   // Plain text, not markup — NewsBreak renders it as the disclosure line above
