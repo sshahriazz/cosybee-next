@@ -9,7 +9,7 @@ than linking out.
 | `/rss.xml` | Description only | Every request |
 | `/newsnow/newsnow.xml` | Description only | Every request |
 | `/news/applenews.xml` | Description only | Every request |
-| `/smartnews/smartnews.xml` | **Full bodies** + SmartFormat branding, latest 20 | Every request, from 60s-cached reads |
+| `/smartnews/smartnews.xml` | **Full bodies** + SmartFormat branding, latest 10 | Every request, from 60s-cached reads |
 | `/newsbreak/newsbreak.xml` | **Full bodies** + MRSS, latest 50 | Every request, from 60s-cached reads |
 
 All five share one builder (`buildRssFeed`) and one article list, so they cannot
@@ -86,12 +86,11 @@ back to the article's own address rather than to a plausible-looking URL on our
 domain that leads nowhere. `<guid>` derives from the same value, which is what
 keeps guid generation identical across feeds.
 
-**Capped** (`maxItems`) — SmartNews at 20, NewsBreak at 50. Each item costs a
+**Capped** (`maxItems`) — SmartNews at 10, NewsBreak at 50. Each item costs a
 detail read, because the list endpoint strips `contentJson`. The cap is applied
-*before* those reads, so
-the work doesn't grow with the archive. `DEFAULT_MAX_ITEMS` is the floor under a
-future feed that forgets to set one — there is no such thing as an uncapped
-full-content feed.
+*before* those reads, so the work doesn't grow with the archive.
+`DEFAULT_MAX_ITEMS` is the floor under a future feed that forgets to set one —
+there is no such thing as an uncapped full-content feed.
 
 **They are the feeds that keep the Data Cache.** The description-only three are
 `force-dynamic` + `no-store`, refetching everything per poll — fine when an item
@@ -100,12 +99,13 @@ cached for 60s, so content can be up to a minute stale; a publish clears that
 immediately (`updateTag(CONTENT_TAG)`).
 
 The routes themselves still render per request — the build marks them `ƒ`.
-Measured on a production build with 50 items (~920KB): **~1.1s cold, ~0.6s
-steady**, which is the fifty `contentJsonToHtml` renders, not the HTTP reads.
-Cheap enough for feeds polled every few minutes. The only way to cache further
-today is `unstable_cache`, which Next 16 documents as replaced by `use cache`
-(Cache Components, not enabled here) — so if this gets expensive, lower
-`maxItems` before reaching for a deprecated API.
+Measured on a production build at 50 items (NewsBreak's cap): **~1.1s cold,
+~0.6s steady**, which is the fifty `contentJsonToHtml` renders, not the HTTP
+reads. SmartNews at 10 items is a fifth of that work. Cheap enough for feeds
+polled every few minutes. The only way to cache further today is
+`unstable_cache`, which Next 16 documents as replaced by `use cache` (Cache
+Components, not enabled here) — so if this gets expensive, lower `maxItems`
+before reaching for a deprecated API.
 
 ---
 
@@ -121,9 +121,15 @@ plus `snf:darkModeLogo` and `ttl`.
 **Items:** `title`, `link`, `guid`, `pubDate`, `dc:creator`, `description`,
 `content:encoded`, `media:thumbnail`, `snf:analytics`.
 
-**Capped at the latest 20**, at SmartNews' request — their crawler polls often
-and wants what is new. It also takes the document from ~920KB to ~700KB per
-poll.
+**Capped at the latest 10**, at SmartNews' request — they came back twice, 50 →
+20 → 10, because the feed carries whole article bodies and the item count *is*
+the payload. Measured on the live catalogue: 50 items ≈ 900KB, 20 ≈ 680KB, 10 ≈
+300KB. Note the curve — dropping 50→20 saved 220KB but 20→10 saved 380KB,
+because the most recent articles are also the longest, so each item trimmed off
+the front costs far more than one off the tail.
+
+If they ask a third time, lower `maxItems` again: it is the only lever that
+reduces what each poll transfers.
 
 ### snf:analytics
 

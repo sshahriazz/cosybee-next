@@ -163,10 +163,18 @@ export const FEEDS = {
     title: `${SITE_NAME} — News`,
     fullContent: true,
     thumbnails: true,
-    // SmartNews asked for the latest 20. Their crawler polls often and wants
-    // what is new, not an archive — and at 20 the feed is ~370KB rather than
-    // ~920KB, which is the difference this makes to every poll.
-    maxItems: 20,
+    // SmartNews asked for the latest 10, after 20 was still too heavy for them.
+    // Their crawler polls often and wants what is new, not an archive, and this
+    // feed carries whole article bodies — so the item count IS the payload.
+    // Measured on the live catalogue: 50 items ≈ 900KB, 20 ≈ 680KB, 10 ≈ 300KB.
+    // Note the curve: dropping 50→20 saved 220KB, but 20→10 saved 380KB. The
+    // recent articles are the LONGEST, so each one trimmed off the front of the
+    // list costs far more than one trimmed off the tail — which is why halving
+    // the count more than halves the payload.
+    //
+    // Lower this again before reaching for anything cleverer if they ask a third
+    // time — it is the only lever that reduces what each poll transfers.
+    maxItems: 10,
     smartFormat: {
       logoUrl: "/smartnews-logo.png",
       darkModeLogoUrl: "/smartnews-logo-dark.png",
