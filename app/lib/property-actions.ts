@@ -58,7 +58,7 @@ export async function activateProperty(propertyId: string): Promise<PropertyActi
     }
     // Invalidate the dashboard so every server-rendered card re-fetches
     // against the newly active home.
-    revalidatePath("/energyflow-home");
+    revalidatePath("/dashboard");
     return { ok: true };
   } catch {
     return { ok: false, error: "Couldn't reach the service. Try again in a moment." };

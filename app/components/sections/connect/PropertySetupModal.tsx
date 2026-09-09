@@ -16,7 +16,7 @@ import type { ConnectResult } from "@/app/lib/connect-actions";
  *
  * The action creates the property AND activates it in one round-trip
  * (see `createProperty` in `app/lib/connect-actions.ts`). On success the
- * Server Action revalidates `/energyflow-home`, so this modal doesn't
+ * Server Action revalidates `/dashboard`, so this modal doesn't
  * need to imperatively close — the page re-renders into the "connect
  * providers" step and the modal unmounts with its trigger.
  */

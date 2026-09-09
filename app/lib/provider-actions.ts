@@ -64,7 +64,7 @@ export async function disconnectSunSync(): Promise<ProviderActionResult> {
       cache: "no-store",
     });
     if (!res.ok) return readError(res, "Couldn't disconnect Sunsynk.");
-    revalidatePath("/energyflow-home");
+    revalidatePath("/dashboard");
     return { ok: true };
   } catch {
     return { ok: false, error: "Couldn't reach the service. Try again in a moment." };
@@ -86,7 +86,7 @@ export async function disconnectOctopus(): Promise<ProviderActionResult> {
       cache: "no-store",
     });
     if (!res.ok) return readError(res, "Couldn't disconnect Octopus.");
-    revalidatePath("/energyflow-home");
+    revalidatePath("/dashboard");
     return { ok: true };
   } catch {
     return { ok: false, error: "Couldn't reach the service. Try again in a moment." };
@@ -233,7 +233,7 @@ export async function switchSunSyncSelection(input: {
       cache: "no-store",
     });
     if (!res.ok) return readError(res, "Couldn't switch to that inverter.");
-    revalidatePath("/energyflow-home");
+    revalidatePath("/dashboard");
     return { ok: true };
   } catch {
     return { ok: false, error: "Couldn't reach Sunsynk. Try again in a moment." };

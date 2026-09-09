@@ -191,6 +191,15 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        // The signed-in dashboard moved from /energyflow-home to /dashboard.
+        // Not an SEO concern — it was never in the sitemap and sits behind a
+        // session — but users bookmark their dashboard, and a stale bookmark
+        // 404ing is a bad way to find that out.
+        source: "/energyflow-home",
+        destination: "/dashboard",
+        permanent: true,
+      },
+      {
         // The blog RSS feed moved from /feed.xml to /rss.xml. 308 so any
         // reader that already subscribed to the old path follows automatically.
         source: "/feed.xml",

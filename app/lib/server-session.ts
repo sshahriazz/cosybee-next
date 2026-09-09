@@ -136,7 +136,7 @@ export async function requireNoPropertyYet(): Promise<ServerSession> {
 
   const { listProperties } = await import("./property-state");
   const properties = await listProperties();
-  if (properties.length > 0) redirect("/energyflow-home");
+  if (properties.length > 0) redirect("/dashboard");
   return session;
 }
 
@@ -152,7 +152,7 @@ export async function requireNoPropertyYet(): Promise<ServerSession> {
  * user record — so archiving every home self-corrects a user back into
  * the funnel on the next request.
  *
- * Admins are EXEMPT: an operator visiting `/energyflow-home` to reproduce
+ * Admins are EXEMPT: an operator visiting `/dashboard` to reproduce
  * a support ticket must not be trapped in the customer funnel, and the
  * admin surface has its own gate (`requireAdmin`). Any other role is
  * treated as a regular user.

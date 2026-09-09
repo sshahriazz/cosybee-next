@@ -21,7 +21,7 @@ import { revalidatePath } from "next/cache";
  * initial form submit — and keeps the eb-auth API surface out of CORS
  * scope (the browser only ever talks to Next).
  *
- * On success both actions `revalidatePath("/energyflow-home")`, so the
+ * On success both actions `revalidatePath("/dashboard")`, so the
  * page auto-flips from `ConnectionEmptyState` into the connected tier the
  * next time the user lands on it — no manual navigation needed.
  */
@@ -99,7 +99,7 @@ function requiredString(
  *      later requests without an `X-Property-Id` header still resolve to
  *      the same home.
  *
- * On success we revalidate `/energyflow-home` so the empty state advances
+ * On success we revalidate `/dashboard` so the empty state advances
  * from the "set up your home" step to the provider CTAs the next paint.
  */
 export async function createProperty(form: FormData): Promise<ConnectResult> {
@@ -170,7 +170,7 @@ export async function createProperty(form: FormData): Promise<ConnectResult> {
       };
     }
 
-    revalidatePath("/energyflow-home");
+    revalidatePath("/dashboard");
     return { ok: true };
   } catch {
     return {
@@ -231,7 +231,7 @@ export async function connectSunSync(form: FormData): Promise<SunSyncConnectResu
 
     if (res.ok) {
       // Flip the page's tier without a full navigation next paint.
-      revalidatePath("/energyflow-home");
+      revalidatePath("/dashboard");
       return { ok: true };
     }
 
@@ -329,7 +329,7 @@ export async function connectOctopus(form: FormData): Promise<ConnectResult> {
     });
 
     if (res.ok) {
-      revalidatePath("/energyflow-home");
+      revalidatePath("/dashboard");
       return { ok: true };
     }
 

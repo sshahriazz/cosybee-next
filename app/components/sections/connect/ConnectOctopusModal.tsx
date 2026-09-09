@@ -22,7 +22,7 @@ import type { ConnectResult } from "@/app/lib/connect-actions";
  * Uses the same `useActionState` + uncontrolled form pattern as
  * {@link ConnectSunSyncModal} — the API key never lives in React state,
  * which keeps it out of dev-tools trees and client-side logs. Success
- * flips the whole `/energyflow-home` page to its connected tier via
+ * flips the whole `/dashboard` page to its connected tier via
  * revalidation inside the Server Action.
  *
  * ### Design notes

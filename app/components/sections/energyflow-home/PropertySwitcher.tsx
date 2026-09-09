@@ -20,7 +20,7 @@ import type { ActiveProperty } from "@/app/lib/property-state";
  * home's label as a passive chip) — the interaction only exists where it
  * matters.
  *
- * Close-on-success: `activateProperty` calls `revalidatePath("/energyflow-home")`
+ * Close-on-success: `activateProperty` calls `revalidatePath("/dashboard")`
  * which re-renders the page against the newly active home. The modal stays
  * mounted unless the user closes it — same behaviour as the existing
  * ConnectSunSyncModal, so this stays consistent with the rest of the app.

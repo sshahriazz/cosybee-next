@@ -30,11 +30,11 @@ export const metadata: Metadata = pageMetadata({
   title: "Energy Flow Dashboard",
   description:
     "Live view of solar, battery, grid, and home energy movement — see how your home balances every watt in real time.",
-  path: "/energyflow-home",
+  path: "/dashboard",
 });
 
 /**
- * `/energyflow-home` — public dashboard view. Composed from the
+ * `/dashboard` — public dashboard view. Composed from the
  * `sections/energyflow-home` module: the page owns nothing but layout and
  * data fetching, so future work (live data, per-day navigation, additional
  * panels) happens inside the module without touching this file.
@@ -66,14 +66,14 @@ export default async function EnergyFlowHomePage({
   // when the signed-in user hasn't created a home yet. Admins are exempt
   // from the onboarding gate so support access still works. The redirect
   // path returns the user here after login.
-  await requireOnboarded("/energyflow-home");
+  await requireOnboarded("/dashboard");
 
   const wrapper = (children: React.ReactNode) => (
     <div className="efh-scope bg-background text-foreground">
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "Energy Flow Dashboard", path: "/energyflow-home" },
+          { name: "Energy Flow Dashboard", path: "/dashboard" },
         ])}
       />
       {/* `spacing="sm"` (py-12 lg:py-16) instead of the marketing-band

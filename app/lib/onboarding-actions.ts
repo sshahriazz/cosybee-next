@@ -219,7 +219,7 @@ export async function createPropertyFromEpc(input: {
     if (!body.id) return { ok: false, error: "Backend returned no property id." };
     // The dashboard reads properties on next paint — invalidate now so the
     // subsequent redirect from onboarding lands on live state.
-    revalidatePath("/energyflow-home");
+    revalidatePath("/dashboard");
     return { ok: true, propertyId: body.id };
   } catch {
     return { ok: false, error: "Couldn't reach the service. Try again in a moment." };
@@ -256,7 +256,7 @@ export async function createPropertyWithoutEpc(input: {
     if (!res.ok) return readError(res, "Couldn't save your home details.");
     const body = (await res.json()) as { id?: string };
     if (!body.id) return { ok: false, error: "Backend returned no property id." };
-    revalidatePath("/energyflow-home");
+    revalidatePath("/dashboard");
     return { ok: true, propertyId: body.id };
   } catch {
     return { ok: false, error: "Couldn't reach the service. Try again in a moment." };

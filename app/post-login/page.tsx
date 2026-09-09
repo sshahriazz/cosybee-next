@@ -12,7 +12,7 @@ import { listProperties } from "@/app/lib/property-state";
  *   • banned                  → /banned
  *   • admin                   → /admin
  *   • signed-in, no property  → /onboarding/address (funnel start)
- *   • signed-in, has property → /energyflow-home (dashboard)
+ *   • signed-in, has property → /dashboard (dashboard)
  *
  * The onboarding gate is DERIVED from "does the user own ≥ 1 non-archived
  * property?" — no durable `hasCompletedOnboarding` flag. Self-correcting:
@@ -34,7 +34,7 @@ export default async function PostLoginPage() {
 
   const properties = await listProperties();
   if (properties.length === 0) redirect("/onboarding/address");
-  redirect("/energyflow-home");
+  redirect("/dashboard");
 }
 
 /** Fallback for the split-second before Next issues the 3xx. */
