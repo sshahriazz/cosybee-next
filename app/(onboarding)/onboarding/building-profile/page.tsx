@@ -89,7 +89,7 @@ export default async function BuildingProfilePage({
         description={
           resolution.kind === "pick"
             ? "We found several EPC records for this postcode. Pick your home to pull in its ratings, or continue without an EPC."
-            : "We couldn't find an EPC for this postcode. We can still set up your home from the address alone."
+            : "We couldn't find an EPC for this postcode. Tell us when your home was built and we'll estimate its rating."
         }
       />
       <BuildingProfileClient address={address} epcs={epcs} />

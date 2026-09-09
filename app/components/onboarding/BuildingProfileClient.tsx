@@ -2,13 +2,22 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Button, Chip, Label, Radio, RadioGroup } from "@heroui/react";
+import {
+  Alert,
+  Button,
+  Chip,
+  Description,
+  Label,
+  Radio,
+  RadioGroup,
+} from "@heroui/react";
 import {
   createPropertyFromEpc,
   createPropertyWithoutEpc,
   type EpcCertificateRow,
   type ResolvedAddress,
 } from "@/app/lib/onboarding-actions";
+import { CONSTRUCTION_ERAS } from "@/app/lib/epc-field-options";
 
 /**
  * Client half of the building-profile step, rendered ONLY on the two
@@ -20,8 +29,8 @@ import {
  *
  *   • `epcs.length > 1` — postcode fallback returned several rows with
  *     no leading-house-number match. User picks from the list.
- *   • `epcs.length === 0` — no EPC on the register. User confirms to
- *     continue with just the address.
+ *   • `epcs.length === 0` — no EPC on the register. User answers when the
+ *     home was built and we estimate the rating from that.
  *
  * Either branch can also flip into the no-EPC fallback via a link, so a
  * multi-row postcode result isn't a dead end for someone whose home
@@ -46,9 +55,17 @@ export function BuildingProfileClient({ address, epcs }: Props) {
     epcs[0]?.certificateNumber ?? "",
   );
   const [useNoEpc, setUseNoEpc] = useState(epcs.length === 0);
+  // The one question the no-EPC path asks. Onboarding deliberately stops
+  // here: the backend fills the remaining eight answers from era-typical
+  // values, and the resident can refine them later. Asking more would grow
+  // the funnel without improving the estimate much.
+  const [constructionEra, setConstructionEra] = useState("");
   // Default label — the customer-facing rename lives in the account area,
   // not the onboarding funnel, so the step doesn't ask for it here.
   const label = "Home";
+  // True on both routes into the no-EPC branch: no certificates at all, or
+  // the user opting out of a list that didn't include their home.
+  const noEpcPath = epcs.length === 0 || useNoEpc;
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   // Separate transition for the "Change" back-navigation so the primary
@@ -63,6 +80,10 @@ export function BuildingProfileClient({ address, epcs }: Props) {
             label,
             address: displayAddress(address),
             postcode: address.postcode,
+            constructionEra,
+            uprn: address.uprn,
+            latitude: address.latitude,
+            longitude: address.longitude,
           })
         : await createPropertyFromEpc({ certificateNumber, label });
       if (!result.ok) {
@@ -156,8 +177,8 @@ export function BuildingProfileClient({ address, epcs }: Props) {
                 : "Continuing without an EPC"}
             </Alert.Title>
             <Alert.Description>
-              We&apos;ll set your home up from the address alone. You can add
-              EPC details later from Settings.
+              We&apos;ll estimate your home&apos;s rating instead. Answer one
+              question below and you can refine it later.
             </Alert.Description>
             {epcs.length > 0 && (
               <Button
@@ -173,11 +194,39 @@ export function BuildingProfileClient({ address, epcs }: Props) {
         </Alert>
       )}
 
+      {noEpcPath && (
+        <RadioGroup
+          className="flex flex-col gap-2"
+          value={constructionEra}
+          onChange={setConstructionEra}
+        >
+          <Label>When was your home built?</Label>
+          <Description>
+            Its age tells us most of what we need to estimate your rating.
+          </Description>
+          {CONSTRUCTION_ERAS.map((era) => (
+            <Radio key={era.value} value={era.value}>
+              <Radio.Content>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                {era.label}
+              </Radio.Content>
+            </Radio>
+          ))}
+        </RadioGroup>
+      )}
+
       <Button
         className="self-start"
         variant="primary"
         onPress={handleCreate}
-        isDisabled={pending || (!useNoEpc && certificateNumber.length === 0)}
+        isDisabled={
+          pending ||
+          (noEpcPath
+            ? constructionEra.length === 0
+            : certificateNumber.length === 0)
+        }
       >
         {pending ? "Setting up your home…" : "Continue"}
       </Button>
