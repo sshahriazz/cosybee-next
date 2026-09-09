@@ -19,6 +19,25 @@ const IS_PRODUCTION_HOST =
     "",
   ) === `https://${CANONICAL_HOST}`;
 
+// The origin serving the hero reel, when it is not our own — see
+// app/lib/hero-videos.ts, which resolves the same env var for the player and
+// the preconnect hint. Derived inline rather than imported, for the same reason
+// as IS_PRODUCTION_HOST above: this config has no app imports.
+//
+// It has to reach the CSP or the move silently breaks. `media-src` is `'self'`,
+// so an off-origin reel is a violation — today only logged, since the header is
+// report-only, but a hard block the moment that is promoted to enforcing. The
+// video would simply never play, with nothing in the UI to say why.
+const HERO_VIDEO_ORIGIN = (() => {
+  const url = process.env.NEXT_PUBLIC_HERO_VIDEO_URL?.trim();
+  if (!url || !/^https?:\/\//i.test(url)) return null;
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
+  }
+})();
+
 // Content-Security-Policy, REPORT-ONLY for now. Report-only never blocks a
 // request — the browser only logs violations to the console — so shipping this
 // can't break the site. Watch the violation reports for a release or two, fix
@@ -35,7 +54,7 @@ const CSP_REPORT_ONLY = [
   "form-action 'self'",
   "manifest-src 'self'",
   "worker-src 'self' blob:",
-  "media-src 'self'",
+  `media-src 'self'${HERO_VIDEO_ORIGIN ? ` ${HERO_VIDEO_ORIGIN}` : ""}`,
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' https://app.consently.net https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://www.clarity.ms",

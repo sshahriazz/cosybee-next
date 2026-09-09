@@ -8,6 +8,7 @@ import {
   VolumeFill,
   VolumeSlashFill,
 } from "@gravity-ui/icons";
+import { HERO_VIDEO_ORIGIN } from "@/app/lib/hero-videos";
 
 /**
  * Background video for the hero, mounted only at md+ (tablet and up). A media
@@ -97,8 +98,6 @@ export default function HeroBackgroundVideo({ src }: { src: string }) {
     };
   }, [show]);
 
-  if (!show) return null;
-
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -121,51 +120,77 @@ export default function HeroBackgroundVideo({ src }: { src: string }) {
 
   return (
     <>
-      <video
-        ref={videoRef}
-        src={src}
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        aria-hidden
-        onPlay={() => {
-          setIsPlaying(true);
-          setHasEnded(false);
-        }}
-        onPause={() => setIsPlaying(false)}
-        onEnded={() => {
-          wantsPlaybackRef.current = false;
-          setHasEnded(true);
-        }}
-        className={`absolute inset-0 -z-10 h-full w-full object-cover object-center transition-opacity duration-700 motion-reduce:hidden ${
-          hasEnded ? "opacity-0" : "opacity-100"
-        }`}
-      />
+      {/* Open the connection to the CDN during the hero's first paint, so the
+          handshake is not still in front of the player when it asks for its
+          first byte. React 19 hoists this to <head> and dedupes it, so the two
+          heroes never emit it twice.
 
-      {/* controls — hidden with the video under prefers-reduced-motion */}
-      <div className="absolute right-4 top-4 z-10 flex gap-2 sm:right-6 sm:top-6 motion-reduce:hidden">
-        <Button
-          isIconOnly
-          size="sm"
-          variant="ghost"
-          aria-label={isPlaying ? "Pause video" : "Play video"}
-          onPress={togglePlay}
-          className="rounded-full bg-black/45 text-white backdrop-blur-sm hover:bg-black/60"
-        >
-          {isPlaying ? <PauseFill /> : <PlayFill />}
-        </Button>
-        <Button
-          isIconOnly
-          size="sm"
-          variant="ghost"
-          aria-label={isMuted ? "Unmute video" : "Mute video"}
-          onPress={toggleMute}
-          className="rounded-full bg-black/45 text-white backdrop-blur-sm hover:bg-black/60"
-        >
-          {isMuted ? <VolumeSlashFill /> : <VolumeFill />}
-        </Button>
-      </div>
+          Rendered OUTSIDE the `show` gate below, and that is the whole point:
+          `show` is false until a client effect measures the viewport, so
+          anything behind it misses the server-rendered HTML and lands in the
+          same commit as the <video> — simultaneous, and therefore worthless as
+          a hint. `media` carries the md+ rule instead, so phones (which never
+          mount the video) do not open a connection they will not use.
+
+          No `crossOrigin`: the <video> below has no `crossorigin` attribute, so
+          it fetches in no-CORS mode. A hint in CORS mode is a separate
+          connection-pool entry and the player would not reuse it. */}
+      {HERO_VIDEO_ORIGIN && (
+        <link
+          rel="preconnect"
+          href={HERO_VIDEO_ORIGIN}
+          media="(min-width: 768px)"
+        />
+      )}
+      {show && (
+        <>
+          <video
+            ref={videoRef}
+            src={src}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden
+            onPlay={() => {
+              setIsPlaying(true);
+              setHasEnded(false);
+            }}
+            onPause={() => setIsPlaying(false)}
+            onEnded={() => {
+              wantsPlaybackRef.current = false;
+              setHasEnded(true);
+            }}
+            className={`absolute inset-0 -z-10 h-full w-full object-cover object-center transition-opacity duration-700 motion-reduce:hidden ${
+              hasEnded ? "opacity-0" : "opacity-100"
+            }`}
+          />
+
+          {/* controls — hidden with the video under prefers-reduced-motion */}
+          <div className="absolute right-4 top-4 z-10 flex gap-2 sm:right-6 sm:top-6 motion-reduce:hidden">
+            <Button
+              isIconOnly
+              size="sm"
+              variant="ghost"
+              aria-label={isPlaying ? "Pause video" : "Play video"}
+              onPress={togglePlay}
+              className="rounded-full bg-black/45 text-white backdrop-blur-sm hover:bg-black/60"
+            >
+              {isPlaying ? <PauseFill /> : <PlayFill />}
+            </Button>
+            <Button
+              isIconOnly
+              size="sm"
+              variant="ghost"
+              aria-label={isMuted ? "Unmute video" : "Mute video"}
+              onPress={toggleMute}
+              className="rounded-full bg-black/45 text-white backdrop-blur-sm hover:bg-black/60"
+            >
+              {isMuted ? <VolumeSlashFill /> : <VolumeFill />}
+            </Button>
+          </div>
+        </>
+      )}
     </>
   );
 }

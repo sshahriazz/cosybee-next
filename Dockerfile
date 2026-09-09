@@ -45,6 +45,10 @@ ENV NODE_ENV=production
 #   NEXT_PUBLIC_PLAY_STORE_PACKAGE_NAME
 #                                   Android application ID e.g. com.energiebee.app
 #                                   — NOT a URL (empty → "coming soon")
+#   NEXT_PUBLIC_HERO_VIDEO_URL      absolute URL of the hero reel on a CDN
+#                                   (empty → the copy in public/hero-videos,
+#                                   served by this app server). Also widens the
+#                                   CSP media-src — see next.config.ts
 #   GOOGLE_SITE_VERIFICATION        Search Console token — baked into the
 #                                   statically-prerendered home HTML, so it must
 #                                   be a build arg (not a runtime env var)
@@ -74,6 +78,8 @@ ARG NEXT_PUBLIC_GOOGLE_ADS_ID
 ENV NEXT_PUBLIC_GOOGLE_ADS_ID=$NEXT_PUBLIC_GOOGLE_ADS_ID
 ARG NEXT_PUBLIC_PLAY_STORE_PACKAGE_NAME
 ENV NEXT_PUBLIC_PLAY_STORE_PACKAGE_NAME=$NEXT_PUBLIC_PLAY_STORE_PACKAGE_NAME
+ARG NEXT_PUBLIC_HERO_VIDEO_URL
+ENV NEXT_PUBLIC_HERO_VIDEO_URL=$NEXT_PUBLIC_HERO_VIDEO_URL
 ARG GOOGLE_SITE_VERIFICATION
 ENV GOOGLE_SITE_VERIFICATION=$GOOGLE_SITE_VERIFICATION
 ARG API_URL
