@@ -1,6 +1,6 @@
 import Image from "next/image";
 // import AppStoreButton from "@/app/components/ui/AppStoreButton";
-import { CtaArrow, CtaButton, CtaChevron } from "@/app/components/ui/Cta";
+import { CtaButton } from "@/app/components/ui/Cta";
 import { Section } from "@/app/components/ui/Section";
 import deviceImg from "@/public/homepage-images/everything-connected-device-mockup.png";
 import ctaBgImg from "@/public/cta-bg.png";
@@ -27,7 +27,7 @@ export default function ReadyToReduce() {
           <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-3xl">
             <Image
               src={ctaBgImg}
-              alt=""
+              alt="CTA background image"
               fill
               sizes="(min-width: 1440px) 1440px, 100vw"
               quality={100}
