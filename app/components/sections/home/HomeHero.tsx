@@ -1,7 +1,6 @@
 import { AppImage as Image } from "@/app/components/ui/AppImage";
 import { Section } from "@/app/components/ui/Section";
 import { Heading, Text } from "@/app/components/ui/Typography";
-// import VideoCarousel from "@/app/components/ui/VideoCarousel";
 import heroBgImg from "@/public/homepage-images/hero-bg-fallback.png";
 import { downloadQrSvg } from "@/app/lib/download-qr";
 import { HERO_VIDEO_LANDSCAPE } from "@/app/lib/hero-videos";
@@ -70,12 +69,6 @@ export default async function HomeHero() {
             <HeroDownloadCta qrSvg={qrSvg} />
           </div>
         </div>
-
-        {/* right: portrait product-video carousel — phone-mockup-sized,
-            same visibility rule as the old mockup (desktop only) */}
-        {/* <div className="hidden w-full max-w-70 shrink-0 min-[968px]:block min-[1300px]:max-w-80">
-          <VideoCarousel videos={HERO_VIDEOS} className="shadow-2xl" />
-        </div> */}
       </div>
     </Section>
   );

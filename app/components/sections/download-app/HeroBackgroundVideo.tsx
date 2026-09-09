@@ -68,6 +68,35 @@ export default function HeroBackgroundVideo({ src }: { src: string }) {
     return () => observer.disconnect();
   }, [show]);
 
+  // Abort the download when this hero goes away — a route change, or a resize
+  // below md.
+  //
+  // Removing a media element from the document runs the spec's "internal pause
+  // steps", which stop PLAYBACK but not the FETCH. With `preload="auto"` on a
+  // ~13MB file that leaves megabytes still arriving for a hero nobody is
+  // looking at, competing for bandwidth with the page just navigated to.
+  // Detaching the source and calling `load()` is what actually cancels it.
+  //
+  // Deferred to a microtask and guarded on `isConnected` because this is
+  // destructive and cannot be undone: React would not re-set the `src` prop
+  // afterwards, since from its side nothing changed. Under Strict Mode's
+  // dev-only setup → cleanup → setup double-invoke the element is still in the
+  // document, so an eager teardown would blank the video on first mount and it
+  // would never come back. By the time the microtask runs, a real unmount has
+  // detached the node and a Strict Mode replay has not.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    return () => {
+      queueMicrotask(() => {
+        if (video.isConnected) return;
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      });
+    };
+  }, [show]);
+
   if (!show) return null;
 
   const togglePlay = () => {
@@ -114,8 +143,7 @@ export default function HeroBackgroundVideo({ src }: { src: string }) {
         }`}
       />
 
-      {/* controls — same look as VideoCarousel's; hidden with the video
-          under prefers-reduced-motion */}
+      {/* controls — hidden with the video under prefers-reduced-motion */}
       <div className="absolute right-4 top-4 z-10 flex gap-2 sm:right-6 sm:top-6 motion-reduce:hidden">
         <Button
           isIconOnly

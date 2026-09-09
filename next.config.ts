@@ -344,6 +344,28 @@ const nextConfig: NextConfig = {
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
       {
+        // Hero videos are the heaviest things the site serves (~13MB for the
+        // landscape reel behind the home and download-app heroes). Next serves
+        // everything in `public/` as `public, max-age=0`, because unlike the
+        // fingerprinted `_next/static` chunks it cannot know when a file
+        // changes — so every visit to either hero paid a revalidation round
+        // trip on a 13MB resource, and any cache eviction meant refetching all
+        // of it.
+        //
+        // These are write-once assets: a new cut gets a new filename (see
+        // app/lib/hero-videos.ts), so `immutable` is safe and turns a repeat
+        // visit into zero bytes. THE FILENAME IS THE CACHE KEY — never
+        // overwrite one of these in place with different footage, or clients
+        // will keep serving the old cut for up to a year. Ship a new name.
+        source: "/hero-videos/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
         // The service worker must never be HTTP-cached, otherwise browsers
         // can keep serving a stale worker and updates won't roll out.
         source: "/sw.js",
