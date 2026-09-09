@@ -30,7 +30,7 @@ const MARKETING_LINKS = [
 ];
 
 const APP_LINKS = [
-  { label: "Dashboard", href: "/energyflow-home" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Account", href: "/account" },
 ];
 
@@ -154,6 +154,13 @@ export default function Navbar({
 
   // A link is active when its href exactly matches the current path or
   // is a prefix of it (so `/solar/details` still highlights "solar").
+  //
+  // The active link is marked in brand yellow with an underline, not by
+  // opacity: this used to be `text-white` against `text-white/80`, a 20%
+  // difference on a black bar that nobody could see. The underline carries
+  // the same information as the colour, so the cue survives for anyone who
+  // can't distinguish the two, and `aria-current` carries it to assistive
+  // tech.
   const isLinkActive = (href: string) => {
     if (href === "/") return currentPath === "/";
     return currentPath === href || currentPath.startsWith(`${href}/`);
@@ -202,8 +209,11 @@ export default function Navbar({
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`text-base font-medium tracking-wide leading-[100%] transition-colors hover:text-white ${
-                    isActive ? "text-white" : "text-white/80"
+                  aria-current={isActive ? "page" : undefined}
+                  className={`border-b-2 pb-1 text-base font-medium leading-[100%] tracking-wide transition-colors hover:text-white ${
+                    isActive
+                      ? "border-accent text-accent"
+                      : "border-transparent text-white/80"
                   }`}
                 >
                   {link.label}
@@ -294,8 +304,9 @@ export default function Navbar({
                     href={link.href}
                     onClick={() => setOpen(false)}
                     tabIndex={open ? 0 : -1}
+                    aria-current={isActive ? "page" : undefined}
                     className={`block rounded-md px-2 py-2 text-base font-medium tracking-wide transition-colors hover:bg-surface/5 hover:text-white ${
-                      isActive ? "text-white" : "text-muted"
+                      isActive ? "bg-surface/5 text-accent" : "text-muted"
                     }`}
                   >
                     {link.label}
