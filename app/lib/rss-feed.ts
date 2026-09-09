@@ -87,7 +87,37 @@ export type FeedDefinition = {
     /** `<ttl>` — how many minutes a poller may cache the feed. */
     ttlMinutes?: number;
   };
+  /**
+   * NewsBreak feed extensions. Presence of this object is what adds the `nb:`
+   * namespace and the `nb-video` / `nb-audio` labels on embed iframes.
+   *
+   * The namespace is declared even when only `nb:disclosure` would use it,
+   * because NewsBreak's specification asks for it at the root of the feed and
+   * — like `snf:` on a SmartFormat document — its presence is what identifies
+   * the document as theirs.
+   */
+  newsBreak?: {
+    /**
+     * Sponsored / affiliate disclosure, shown before the article body.
+     *
+     * Plain text, and it must name who benefits from the relationship. Unset:
+     * nothing on this site is sponsored or carries affiliate links today, and
+     * a disclosure on content that has nothing to disclose is noise. Set it
+     * here the day that changes — it applies to every item in the feed, so a
+     * per-article disclosure would need a field on the post instead.
+     */
+    disclosure?: string;
+  };
 };
+
+/**
+ * The class NewsBreak wants on an embed iframe so it knows which player to
+ * render. Fixed by their specification, not a preference.
+ */
+export const NEWSBREAK_IFRAME_CLASSES = {
+  video: "nb-video",
+  audio: "nb-audio",
+} as const;
 
 /**
  * Every feed the site serves, keyed by the route that serves it.
@@ -139,6 +169,23 @@ export const FEEDS = {
       // and the CDN in front of it agree about how stale the feed may be.
       ttlMinutes: 5,
     },
+  },
+  /**
+   * Polled by NewsBreak. Like SmartNews it renders the article itself, so it
+   * takes whole bodies — their specification is explicit that snippets and
+   * summary-only feeds are not accepted.
+   *
+   * Close enough to SmartNews that both routes share one pipeline
+   * (`renderSyndicationFeed`); what differs is the `nb:` namespace and the
+   * labels on embed iframes.
+   */
+  newsbreak: {
+    path: "/newsbreak/newsbreak.xml",
+    title: `${SITE_NAME} — News`,
+    fullContent: true,
+    thumbnails: true,
+    maxItems: 50,
+    newsBreak: {},
   },
 } as const satisfies Record<string, FeedDefinition>;
 
@@ -202,6 +249,14 @@ function itemXml(
     }
   }
 
+  // Plain text, not markup — NewsBreak renders it as the disclosure line above
+  // the article, so it is escaped like any other text node rather than CDATA'd.
+  if (feed.newsBreak?.disclosure) {
+    extra.push(
+      `      <nb:disclosure>${escapeXml(feed.newsBreak.disclosure)}</nb:disclosure>`,
+    );
+  }
+
   return `    <item>
       <title>${escapeXml(a.seoTitle ?? a.title)}</title>
       <link>${escapeXml(link)}</link>
@@ -246,6 +301,7 @@ export function buildRssFeed(
     ...(feed.smartFormat
       ? [`xmlns:snf="http://www.smartnews.be/snf"`]
       : []),
+    ...(feed.newsBreak ? [`xmlns:nb="https://www.newsbreak.com/"`] : []),
   ].join("\n     ");
 
   const snf = feed.smartFormat;

@@ -104,6 +104,7 @@ const CRAWLER_SIGNATURES: ReadonlyArray<{ name: string; pattern: RegExp }> = [
   { name: "Feedbin", pattern: /Feedbin/i },
   { name: "Flipboard", pattern: /FlipboardProxy|Flipboard/i },
   { name: "SmartNews", pattern: /SmartNews/i },
+  { name: "NewsBreak", pattern: /NewsBreak/i },
 
   // --- Social / messaging link unfurlers ------------------------------------
   // These fetch a URL when someone shares it: they are how the OG card gets
@@ -222,6 +223,7 @@ const ALWAYS_LOG = new Set([
   "/newsnow/newsnow.xml",
   "/news/applenews.xml",
   "/smartnews/smartnews.xml",
+  "/newsbreak/newsbreak.xml",
   "/llms.txt",
   "/manifest.webmanifest",
 ]);

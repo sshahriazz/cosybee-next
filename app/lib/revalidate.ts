@@ -40,6 +40,7 @@ export function revalidateContent(): void {
   // per request today, so `updateTag` alone already makes the next poll see the
   // new post. The line costs nothing and covers the day it stops being dynamic.
   revalidatePath("/smartnews/smartnews.xml");
+  revalidatePath("/newsbreak/newsbreak.xml");
 
   // Archives whose content can change without their own slug being touched.
   revalidatePath("/author/[slug]", "page");

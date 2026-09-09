@@ -41,6 +41,60 @@ export async function renderArticleBody(article: Article): Promise<string> {
   return blockNoteHtml || article.contentHtml || "";
 }
 
+/**
+ * Hosts whose embeds are audio rather than video.
+ *
+ * Used only to label an `<iframe>` for an aggregator that asks for one (see
+ * `classifyEmbedIframes`). Deliberately a small allow-list with a video
+ * default: video is overwhelmingly the common case in article bodies, and the
+ * cost of the rare wrong guess is a player that renders in the wrong shape,
+ * not a broken article. Add a host here when one turns up.
+ */
+const AUDIO_EMBED_HOSTS = [
+  "open.spotify.com",
+  "w.soundcloud.com",
+  "soundcloud.com",
+  "podcasts.apple.com",
+  "embed.podcasts.apple.com",
+  "anchor.fm",
+  "podbean.com",
+  "buzzsprout.com",
+];
+
+/**
+ * Add a class to every `<iframe>` saying whether it carries video or audio.
+ *
+ * NewsBreak asks for this explicitly — it renders the article body itself and
+ * uses the class to decide which player chrome to wrap an embed in, so an
+ * unlabelled iframe is an embed it may not render at all.
+ *
+ * An iframe that ALREADY carries the class is left alone, and an existing
+ * `class` attribute is appended to rather than replaced — the authored markup
+ * may be carrying a provider's own classes (Instagram's embeds do), and
+ * dropping those breaks the embed we are trying to preserve.
+ */
+export function classifyEmbedIframes(
+  html: string,
+  classes: { video: string; audio: string },
+): string {
+  return html.replace(/<iframe\b[^>]*>/gi, (tag) => {
+    if (tag.includes(classes.video) || tag.includes(classes.audio)) return tag;
+    const src = /\ssrc="([^"]*)"/i.exec(tag)?.[1] ?? "";
+    let host = "";
+    try {
+      host = new URL(src, SITE_URL).hostname.toLowerCase();
+    } catch {
+      // Unparseable src — still label it, as video, so the embed is at least
+      // offered to the renderer rather than silently dropped.
+    }
+    const name = AUDIO_EMBED_HOSTS.includes(host) ? classes.audio : classes.video;
+    const existing = /\sclass="([^"]*)"/i.exec(tag);
+    return existing
+      ? tag.replace(existing[0], ` class="${existing[1]} ${name}"`)
+      : tag.replace(/^<iframe\b/i, `<iframe class="${name}"`);
+  });
+}
+
 /** Attributes whose value is a URL that a syndicated copy has to resolve. */
 const URL_ATTRIBUTES = ["src", "href", "poster"] as const;
 
