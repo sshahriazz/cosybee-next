@@ -27,7 +27,13 @@ export default function ReadyToReduce() {
           <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-3xl">
             <Image
               src={ctaBgImg}
-              alt="CTA background image"
+              // Decorative: a texture behind the card, carrying nothing the
+              // copy doesn't already say. Empty alt + aria-hidden is the house
+              // pattern for these (see Benefits, WhyThousands, SectionContent)
+              // and keeps it out of the reading order — a described backdrop
+              // would announce itself ahead of the card's actual content.
+              alt=""
+              aria-hidden
               fill
               sizes="(min-width: 1440px) 1440px, 100vw"
               quality={100}
